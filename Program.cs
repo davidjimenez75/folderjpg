@@ -5,12 +5,46 @@ using System.Linq;
 
 public class Program
 {
+    private const string VERSION = "1.0.0";
+
     // Punto de entrada de la aplicación
     public static void Main(string[] args)
     {
+        if (args.Length > 0)
+        {
+            switch (args[0])
+            {
+                case "--help":
+                    DisplayHelp();
+                    return;
+                case "--version":
+                    DisplayVersion();
+                    return;
+            }
+        }
+
         string currentDirectory = Directory.GetCurrentDirectory();
         ProcessDirectory(currentDirectory);
         Console.WriteLine("Proceso completado.");
+    }
+
+    // Muestra la información de ayuda
+    private static void DisplayHelp()
+    {
+        Console.WriteLine("Uso: folderjpg [OPCIÓN]");
+        Console.WriteLine("Procesa archivos folder.jpg en el directorio actual y sus subdirectorios.");
+        Console.WriteLine();
+        Console.WriteLine("Opciones:");
+        Console.WriteLine("  --help        Muestra esta ayuda");
+        Console.WriteLine("  --version     Muestra la versión del programa");
+        Console.WriteLine();
+        Console.WriteLine("Sin opciones, el programa procesará el directorio actual y sus subdirectorios.");
+    }
+
+    // Muestra la versión del programa
+    private static void DisplayVersion()
+    {
+        Console.WriteLine($"folderjpg versión {VERSION}");
     }
 
     // Procesa un directorio y todos sus subdirectorios
