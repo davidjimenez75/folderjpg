@@ -6,6 +6,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <StartupObject>Program</StartupObject>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,15 +22,15 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
   </ItemGroup>
 
-  <Target Name="CopyFilesToUlbFolder" AfterTargets="Publish" Condition="'$(Configuration)' == 'Release'">
+  <Target Name="CopyFilesToUlbFolder" AfterTargets="Publish">
     <PropertyGroup>
       <UlbFolder>c:\ulb\folderjpg\</UlbFolder>
     </PropertyGroup>
     <ItemGroup>
-      <FilesToCopy Include="$(PublishDir)**\*" />
+      <FileToCopy Include="$(PublishDir)folderjpg.exe" />
     </ItemGroup>
-    <Message Text="Copiando archivos a $(UlbFolder)" Importance="high" />
-    <Copy SourceFiles="@(FilesToCopy)" DestinationFolder="$(UlbFolder)%(RecursiveDir)" />
+    <Message Text="Copiando folderjpg.exe a $(UlbFolder)" Importance="high" />
+    <Copy SourceFiles="@(FileToCopy)" DestinationFolder="$(UlbFolder)" />
   </Target>
 
 </Project>
