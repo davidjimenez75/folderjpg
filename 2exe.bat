@@ -1,2 +1,2 @@
 @echo off
-dotnet publish -r win-x64 -c Release /p:PublishSingleFile=true /p:IncludeNativeLibrariesForSelfExtract=true
+dotnet publish -r win-x64 -c Release
