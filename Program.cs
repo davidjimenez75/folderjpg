@@ -5,7 +5,7 @@ using System.Linq;
 
 public class Program
 {
-    private const string VERSION = "24.10.05";
+    private const string VERSION = "2024.10.05.1100";
     private const string DEBUG = "false";
 
     // Entry point of the application
@@ -17,6 +17,16 @@ public class Program
             {
                 // Help options
                 case "--help":
+                    DisplayHelp();
+                    return;
+
+                // Help options
+                case "-help":
+                    DisplayHelp();
+                    return;
+
+                // Help options
+                case "-h":
                     DisplayHelp();
                     return;
 
@@ -44,26 +54,47 @@ public class Program
                 case "--version":
                     DisplayVersion();
                     return;
+                
+                // Version options
+                case "-version":
+                    DisplayVersion();
+                    return;
+                
+                // Version options
+                case "--v":
+                    DisplayVersion();
+                    return;
+
+                // Version options
+                case "-v":
+                    DisplayVersion();
+                    return;
 
                 // Detect if the user is inserting a path as an argument
                 default:
                     if (Directory.Exists(args[0]))
                     {
+                        // if the path exist, process recursively the directory
+                        Console.WriteLine("folderjpg v" + VERSION);
+                        Console.WriteLine();
                         ProcessDirectory(args[0]);
                         Console.WriteLine("Job Finished");
                         return;
                     }
                     else
                     {
+                        // if the path does not exist, show an error message
+                        Console.WriteLine("folderjpg v" + VERSION);
+                        Console.WriteLine();
                         Console.WriteLine("Path not found. Use --help to see the available options.");
                         return;
                     }
             }
         }
-
-        string currentDirectory = Directory.GetCurrentDirectory();
-        ProcessDirectory(currentDirectory);
-        Console.WriteLine("Job Finished");
+        // If no arguments are passed, we dont to nothing
+        Console.WriteLine("folderjpg v" + VERSION);
+        Console.WriteLine();
+        Console.WriteLine("Path not found. Use --help to see the available options.");
     }
 
 
