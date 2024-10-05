@@ -5,7 +5,7 @@ using System.Linq;
 
 public class Program
 {
-    public const string VERSION = "2024.10.05.1313";
+    public const string VERSION = "2024.10.05.1331";
     private const string DEBUG = "false";
 
     // Entry point of the application
@@ -202,13 +202,39 @@ public class Program
     // Convert and resize the image to an icon of 256x256
     static void ConvertToIcon(string inputPath, string outputPath)
     {
+        // Convert the jpg file to an icon file with multiple sizes from 16 to 256 pixels
         try
         {
-            using (var image = new MagickImage(inputPath))
+            using (var collection = new MagickImageCollection())
             {
-                image.Resize(256, 256);
-                image.Format = MagickFormat.Ico;
-                image.Write(outputPath);
+                // Load the original image
+                using (var originalImage = new MagickImage(inputPath))
+                {
+                    // Define standard ICO sizes
+                    int[] sizes = { 16, 32, 48, 64, 128, 256 };
+
+                    foreach (int size in sizes)
+                    {
+                        using (var image = originalImage.Clone())
+                        {
+                            // Resize the image while maintaining aspect ratio
+                            image.Resize(size, size);
+
+                            // Create a new image with the correct size and transparent background
+                            using (var resizedImage = new MagickImage(MagickColors.Transparent, size, size))
+                            {
+                                // Composite the resized image onto the transparent background
+                                resizedImage.Composite(image, Gravity.Center, CompositeOperator.Over);
+
+                                // Add the image to the collection
+                                collection.Add(resizedImage.Clone());
+                            }
+                        }
+                    }
+                }
+
+                // Save as ICO
+                collection.Write(outputPath, MagickFormat.Ico);
             }
         }
         catch (Exception ex)
