@@ -23,12 +23,6 @@ By default the compilation is copied to c:\ulb\folderjpg\
 
 You can change the output folder by changing the value of the `OutputPath` property in the `folderjpg.csproj` file.
 
-Compile the project by running the following commands in the root folder of the repository:
-
-```
-dotnet build -c Release
-```
-
 Publish the project by running the following commands in the root folder of the repository:
 
 ```
@@ -37,10 +31,6 @@ dotnet publish -c Release
 
 
 ### Compile Release version in only one folderjpg.exe file
-
-By default the compilation is copied to c:\ulb\folderjpg\
-
-You can change the output folder by changing the value of the `OutputPath` property in the `folderjpg.csproj` file.
 
 Compile the project by running the following commands in the root folder of the repository:
 

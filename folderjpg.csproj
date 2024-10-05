@@ -6,6 +6,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <StartupObject>Program</StartupObject>
+    <Version>$(VERSION)</Version>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <FileVersion>$(VERSION)</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,6 +31,14 @@
     </ItemGroup>
     <Message Text="Copiando archivos a $(OutputFolder)" Importance="high" />
     <Copy SourceFiles="@(FilesToCopy)" DestinationFolder="$(OutputFolder)%(RecursiveDir)" />
+  </Target>
+
+
+  <Target Name="SetVersion" BeforeTargets="CoreCompile">
+    <PropertyGroup>
+      <VERSION>$([System.Text.RegularExpressions.Regex]::Match($([System.IO.File]::ReadAllText('$(MSBuildProjectDirectory)\Program.cs')), 'VERSION = "(.*?)"').Groups[1].Value)</VERSION>
+    </PropertyGroup>
+    <Message Importance="high" Text="Building version: $(VERSION)" />
   </Target>
 
 </Project>
