@@ -44,11 +44,21 @@ public class Program
                 case "--version":
                     DisplayVersion();
                     return;
-            }
 
-            //if the args are not help, lang or version, then show the error message
-            Console.WriteLine("Invalid option. Use --help to see the available options.");
-            return;
+                // Detect if the user is inserting a path as an argument
+                default:
+                    if (Directory.Exists(args[0]))
+                    {
+                        ProcessDirectory(args[0]);
+                        Console.WriteLine("Job Finished");
+                        return;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Path not found. Use --help to see the available options.");
+                        return;
+                    }
+            }
         }
 
         string currentDirectory = Directory.GetCurrentDirectory();
@@ -59,13 +69,13 @@ public class Program
 
 
     // Show the version of the program on console   
-    private static void DisplayVersion()
+    static void DisplayVersion()
     {
         Console.WriteLine($"folderjpg v{VERSION}");
     }
 
     // Process the directory and its subdirectories
-    public static void ProcessDirectory(string directory)
+    static void ProcessDirectory(string directory)
     {
         try
         {
@@ -156,8 +166,8 @@ public class Program
         }
     }
 
-    // Convert and resize the image to an icon of 256x256
-    public static void ConvertToIcon(string inputPath, string outputPath)
+        // Convert and resize the image to an icon of 256x256
+        static void ConvertToIcon(string inputPath, string outputPath)
     {
         try
         {
@@ -174,8 +184,8 @@ public class Program
         }
     }
 
-    // Create the desktop.ini in the directory processed
-    public static void CreateDesktopIniFile(string directory, string iconFileName)
+        // Create the desktop.ini in the directory processed
+        public static void CreateDesktopIniFile(string directory, string iconFileName)
     {
         string desktopIniPath = Path.Combine(directory, "desktop.ini");
         string content = $"[.ShellClassInfo]\r\nIconResource={iconFileName},0";
@@ -188,8 +198,8 @@ public class Program
         di.Attributes |= FileAttributes.ReadOnly;
     }
 
-    // Generate a random string of a given length
-    public static string GenerateRandomString(int length)
+        // Generate a random string of a given length
+        public static string GenerateRandomString(int length)
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         var random = new Random();
@@ -197,14 +207,14 @@ public class Program
             .Select(s => s[random.Next(s.Length)]).ToArray());
     }
 
-    // Return the language of the system
-    public static string GetSystemLanguage()
+        // Return the language of the system
+        static string GetSystemLanguage()
     {
         return System.Globalization.CultureInfo.InstalledUICulture.TwoLetterISOLanguageName;
     }
 
     // Show the help information on console
-    private static void DisplayHelp()
+    static void DisplayHelp()
     {
         string language = GetSystemLanguage();
         if (language == "es")
@@ -218,7 +228,7 @@ public class Program
     }
 
     // HELP EN - help in english
-    private static void DisplayHelpEnglish()
+    static void DisplayHelpEnglish()
     {
         Console.WriteLine("folderjpg v" + VERSION);
         Console.WriteLine();
@@ -234,7 +244,7 @@ public class Program
     }
 
     // HELP ES - help in spanish
-    private static void DisplayHelpSpanish()
+    static void DisplayHelpSpanish()
     {
         Console.WriteLine("folderjpg v" + VERSION);
         Console.WriteLine();
