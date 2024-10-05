@@ -14,9 +14,32 @@ public class Program
         {
             switch (args[0])
             {
+                // Help options
                 case "--help":
                     DisplayHelp();
                     return;
+                
+                // Language options
+                case "--lang":
+                    if (args.Length > 1)
+                    {
+                        string lang = args[1];
+                        if (lang == "es")
+                        {
+                            DisplayHelpSpanish();
+                        }
+                        else
+                        {
+                            DisplayHelpEnglish();
+                        }
+                    }
+                    else
+                    {
+                        DisplayHelp();
+                    }
+                    return;
+                
+                // Version options
                 case "--version":
                     DisplayVersion();
                     return;
@@ -137,7 +160,6 @@ public class Program
             .Select(s => s[random.Next(s.Length)]).ToArray());
     }
 
-
     // Return the laguage of the system
     public static string GetSystemLanguage()
     {
@@ -147,7 +169,6 @@ public class Program
     // Show the help information on console
     private static void DisplayHelp()
     {
-
         string language = GetSystemLanguage();
         if (language == "es")
         {
@@ -169,6 +190,7 @@ public class Program
         Console.WriteLine();
         Console.WriteLine("Options:");
         Console.WriteLine("  --help     Display this help text");
+        Console.WriteLine("  --lang xx  Force the language");
         Console.WriteLine("  --version  Display the version of the program");
     }
 
@@ -182,6 +204,7 @@ public class Program
         Console.WriteLine();
         Console.WriteLine("Opciones:");
         Console.WriteLine("  --help     Muestra este texto de ayuda");
+        Console.WriteLine("  --lang xx  Fuerza el idioma");
         Console.WriteLine("  --version  Muestra la versión del programa");
     }
 
