@@ -316,7 +316,7 @@ public class Program
         Console.WriteLine("Ejemplos:");
         Console.WriteLine("  folderjpg");
         Console.WriteLine("  folderjpg --help");
-        Console.WriteLine("  folderjpg --lang es");
+        Console.WriteLine("  folderjpg --lang en");
         Console.WriteLine("  folderjpg --version");
         Console.WriteLine("  folderjpg \"C:\\Users\\usuario\\Pictures\"");
         Console.WriteLine("  folderjpg \"C:\\Users\\usuario\\Music\"");
