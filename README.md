@@ -1,9 +1,10 @@
 # folderjpg
 
-Create full size icons to Windows folders recursively from all the "folder.jpg" and "cover.jpg" files.
+folderjpg is a command line tool to create full size icons to Windows folders recursively from all the "folder.jpg" and "cover.jpg" files.
 
 
-### Compilation
+
+## COMPILATION
 
 For compilation, you need to have the .NET Core SDK installed. You can download it from [here](https://dotnet.microsoft.com/download).
 
@@ -16,7 +17,7 @@ dotnet restore
 ```
 
 
-#### Compile Release version with libraries
+### Compile Release version with libraries
 
 By default the compilation is copied to c:\ulb\folderjpg\
 
@@ -29,7 +30,7 @@ dotnet build -c Release
 ```
 
 
-#### Compile Release version in only one folderjpg.exe file
+### Compile Release version in only one folderjpg.exe file
 
 By default the compilation is copied to c:\ulb\folderjpg\
 
@@ -42,7 +43,8 @@ dotnet publish -r win-x64 -c Release /p:PublishSingleFile=true /p:IncludeNativeL
 ```
 
 
-### Help
+
+## HELP
 
 Show the help message by running the following command in the root folder of the repository:
 
@@ -51,13 +53,45 @@ folderjpg --help
 ```
 
 
-### Usage
+
+## USAGE
 
 For security reasons a path in mandatory to avoid unwanted operations on full disk.
 
 ```
 folderjpg [options] <path>
 ```
+
+
+
+## EXAMPLES
+
+#### Music folder process all albums
+
+Process the "Music" folder in the user profile folder recursively:
+
+```
+folderjpg "%USERPROFILE%\Music"
+```
+
+#### Calibre library folder process all books
+
+```
+folderjpg "%USERPROFILE%\Calibre Library"
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

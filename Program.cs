@@ -5,7 +5,7 @@ using System.Linq;
 
 public class Program
 {
-    private const string VERSION = "2024.10.05.1117";
+    private const string VERSION = "2024.10.05.1137";
     private const string DEBUG = "false";
 
     // Entry point of the application
@@ -164,7 +164,7 @@ public class Program
                     Console.WriteLine();
 
                     // Show the current directory being processed
-                    Console.WriteLine($"### Processing: \"{directoryName}\"");
+                    Console.WriteLine($"### folderjpg \"{directoryName}\\\"");
                     Console.WriteLine();
 
                     // Convert the jpg file to a 256x256 icon
@@ -178,9 +178,6 @@ public class Program
                     // FIXME: Refreshing icon cache for current folder
                     Console.WriteLine($"- Refreshing icon cache");
                     System.Diagnostics.Process.Start("ie4uinit.exe", "-show");
-
-                    // Processed the jpg file
-                    Console.WriteLine($"- Processed: {jpgFile}");
                 }
                 Console.WriteLine();
             }
