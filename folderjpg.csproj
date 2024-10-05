@@ -19,15 +19,15 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
   </ItemGroup>
 
-  <Target Name="CopyFilesToUlbFolder" AfterTargets="Publish" Condition="'$(Configuration)' == 'Release'">
+  <Target Name="CopyFilesToOutputFolder" AfterTargets="Publish" Condition="'$(Configuration)' == 'Release'">
     <PropertyGroup>
-      <UlbFolder>c:\ulb\folderjpg\</UlbFolder>
+      <OutputFolder>c:\ulb\folderjpg\</OutputFolder>
     </PropertyGroup>
     <ItemGroup>
       <FilesToCopy Include="$(PublishDir)**\*" />
     </ItemGroup>
-    <Message Text="Copiando archivos a $(UlbFolder)" Importance="high" />
-    <Copy SourceFiles="@(FilesToCopy)" DestinationFolder="$(UlbFolder)%(RecursiveDir)" />
+    <Message Text="Copiando archivos a $(OutputFolder)" Importance="high" />
+    <Copy SourceFiles="@(FilesToCopy)" DestinationFolder="$(OutputFolder)%(RecursiveDir)" />
   </Target>
 
 </Project>
