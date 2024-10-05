@@ -5,7 +5,7 @@ using System.Linq;
 
 public class Program
 {
-    public const string VERSION = "2024.10.05.1245";
+    public const string VERSION = "2024.10.05.1313";
     private const string DEBUG = "false";
 
     // Entry point of the application
@@ -116,9 +116,14 @@ public class Program
             // Get directory name if cover.jpg exists
             string[] coverJpgFiles = Directory.GetFiles(directory, "cover.jpg", SearchOption.TopDirectoryOnly);
 
+            // Get directory name if front.jpg exists
+            string[] frontJpgFiles = Directory.GetFiles(directory, "front.jpg", SearchOption.TopDirectoryOnly);
+
             // Combine the folder.jpg and cover.jpg files into a single array to process
             string[] jpgFiles = folderJpgFiles.Concat(coverJpgFiles).ToArray();
 
+            // Combine the folder.jpg, cover.jpg and front.jpg files into a single array to process
+            jpgFiles = jpgFiles.Concat(frontJpgFiles).ToArray();
 
             // loop through the jpg files
             foreach (string jpgFile in jpgFiles)
