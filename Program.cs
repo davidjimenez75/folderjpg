@@ -6,6 +6,7 @@ using System.Linq;
 public class Program
 {
     private const string VERSION = "24.10.05";
+    private const string DEBUG = "true";
 
     // Entry point of the application
     public static void Main(string[] args)
@@ -18,7 +19,7 @@ public class Program
                 case "--help":
                     DisplayHelp();
                     return;
-                
+
                 // Language options
                 case "--lang":
                     if (args.Length > 1)
@@ -38,7 +39,7 @@ public class Program
                         DisplayHelp();
                     }
                     return;
-                
+
                 // Version options
                 case "--version":
                     DisplayVersion();
@@ -64,47 +65,75 @@ public class Program
     {
         try
         {
+            // Get all folder.jpg files in the current directory
             string[] jpgFiles = Directory.GetFiles(directory, "folder.jpg", SearchOption.TopDirectoryOnly);
+            
+            // Get all cover.jpg files in the current directory
+            string[] jpgFiles = Directory.GetFiles(directory, "cover.jpg", SearchOption.TopDirectoryOnly);
+
 
             foreach (string jpgFile in jpgFiles)
             {
                 string? directoryName = Path.GetDirectoryName(jpgFile);
                 if (directoryName == null)
                 {
-                    Console.WriteLine($"No se pudo obtener el directorio para {jpgFile}");
+                    Console.WriteLine($"Failed to get the directory for {jpgFile}");
                     continue;
                 }
 
                 if (File.Exists(Path.Combine(directoryName, "desktop.ini")))
                 {
-                    Console.WriteLine($"Ya existe un archivo desktop.ini en el directorio {directoryName}");
+                    Console.WriteLine($"A desktop.ini file already exists in the directory {directoryName}");
                     continue;
                 }
 
-                string randomString = GenerateRandomString(6);
-                string icoFileName = Path.Combine(directoryName, $"folderjpg-{randomString}.ico");
+                if (DEBUG)
+                {
+                    // If debug mode exist only show information
+                    Console.WriteLine($"- FOLDER={directoryName}");
 
-                // Salto de línea para separar los directorios
+                    if (File.Exists(Path.Combine(directoryName, "desktop.ini")))
+                    {
+                        Console.WriteLine($"- {directoryName}/desktop.ini");
+                    }
+                    if (File.Exists(Path.Combine(directoryName, "folder.jpg")))
+                    {
+                        Console.WriteLine($"-  {directoryName}/folder.jpg");
+                    }
+                    if (File.Exists(Path.Combine(directoryName, "cover.jpg")))
+                    {
+                        Console.WriteLine($"-  {directoryName}/cover.jpg");
+                    }
+
+                }
+                else
+                {
+                    string randomString = GenerateRandomString(6);
+                    string icoFileName = Path.Combine(directoryName, $"folderjpg-{randomString}.ico");
+
+                    // New line to separate directories
+                    Console.WriteLine();
+                    Console.WriteLine();
+
+                    // Show the current directory being processed
+                    Console.WriteLine($"### Processing directory: {directoryName}");
+
+                    // Convert the jpg file to a 256x256 icon
+                    Console.WriteLine($"- ConvertToIcon({jpgFile}, {icoFileName});");
+                    ConvertToIcon(jpgFile, icoFileName);
+
+                    // Create the desktop.ini file
+                    Console.WriteLine($"- CreateDesktopIniFile({directoryName}, folderjpg-{randomString}.ico);");
+                    CreateDesktopIniFile(directoryName, $"folderjpg-{randomString}.ico");
+
+                    // FIXME: Refreshing icon cache for current folder
+                    Console.WriteLine($"- Refreshing icon cache for current folder...");
+                    System.Diagnostics.Process.Start("ie4uinit.exe", "-show");
+
+                    // Processed the jpg file
+                    Console.WriteLine($"- Processed: {jpgFile}");
+                }
                 Console.WriteLine();
-                Console.WriteLine();
-
-                // Mostramos la carpeta actual que estamos procesando
-                Console.WriteLine($"### Procesando directorio: {directoryName}");
-
-                // Convertimos el archivo jpg a icono de 256x256
-                Console.WriteLine($"- ConvertToIcon({jpgFile}, {icoFileName});");
-                ConvertToIcon(jpgFile, icoFileName);
-
-                // Creamos el archivo desktop.ini
-                Console.WriteLine($"- CreateDesktopIniFile({directoryName}, folderjpg-{randomString}.ico);");
-                CreateDesktopIniFile(directoryName, $"folderjpg-{randomString}.ico");
-
-                // FIXME: Refrescando el caché de iconos para la carpeta actual
-                Console.WriteLine($"- Refreshing icon cache for current folder...");
-                System.Diagnostics.Process.Start("ie4uinit.exe", "-show");
-
-                // Procesado el fichero jpg
-                Console.WriteLine($"- Procesado: {jpgFile}");
             }
 
             string[] subdirectories = Directory.GetDirectories(directory);
@@ -115,7 +144,7 @@ public class Program
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error al procesar el directorio {directory}: {ex.Message}");
+            Console.WriteLine($"Error processing directory {directory}: {ex.Message}");
         }
     }
 
@@ -160,7 +189,7 @@ public class Program
             .Select(s => s[random.Next(s.Length)]).ToArray());
     }
 
-    // Return the laguage of the system
+    // Return the language of the system
     public static string GetSystemLanguage()
     {
         return System.Globalization.CultureInfo.InstalledUICulture.TwoLetterISOLanguageName;
