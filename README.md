@@ -29,6 +29,12 @@ Compile the project by running the following commands in the root folder of the 
 dotnet build -c Release
 ```
 
+Publish the project by running the following commands in the root folder of the repository:
+
+```
+dotnet publish -c Release
+```
+
 
 ### Compile Release version in only one folderjpg.exe file
 

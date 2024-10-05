@@ -5,7 +5,7 @@ using System.Linq;
 
 public class Program
 {
-    private const string VERSION = "2024.10.05.1221";
+    private const string VERSION = "2024.10.05.1231";
     private const string DEBUG = "false";
 
     // Entry point of the application
@@ -260,15 +260,34 @@ public class Program
     {
         Console.WriteLine("folderjpg v" + VERSION);
         Console.WriteLine();
-        Console.WriteLine("Automatically set folder icons from folder.jpg and cover.jpg files");
+        Console.WriteLine("Command line tool to create full size icons to Windows folders recursively from all the \"folder.jpg\" and \"cover.jpg\" files.");
         Console.WriteLine();
         Console.WriteLine("Usage:");
-        Console.WriteLine("  folderjpg [options]");
+        Console.WriteLine("  folderjpg [options] <path>");
         Console.WriteLine();
         Console.WriteLine("Options:");
         Console.WriteLine("  --help     Display this help text");
         Console.WriteLine("  --lang xx  Force the language");
         Console.WriteLine("  --version  Display the version of the program");
+        Console.WriteLine();
+        Console.WriteLine("Arguments:");
+        Console.WriteLine("  path       The path to the directory to process");
+        Console.WriteLine("             If no path is provided, nothing is done");
+        Console.WriteLine("             If the path is not found, an error message is displayed");
+        Console.WriteLine("             If the path is not a directory, an error message is displayed");
+        Console.WriteLine("             If the path is a file, an error message is displayed");
+        Console.WriteLine("             If the path is a directory, the program processes it recursively");
+        Console.WriteLine("");
+        Console.WriteLine("Examples:");
+        Console.WriteLine("  folderjpg");
+        Console.WriteLine("  folderjpg --help");
+        Console.WriteLine("  folderjpg --lang es");
+        Console.WriteLine("  folderjpg --version");
+        Console.WriteLine("  folderjpg \"C:\\Users\\User\\Pictures\"");
+        Console.WriteLine("  folderjpg \"C:\\Users\\User\\Music\"");
+        Console.WriteLine("  folderjpg \"C:\\Users\\User\\Calibre library\"");
+
+
     }
 
     // HELP ES - help in spanish
@@ -279,12 +298,29 @@ public class Program
         Console.WriteLine("Crea iconos en las subcarpetas a partir de los archivos folder.jpg y cover.jpg");
         Console.WriteLine();
         Console.WriteLine("Uso:");
-        Console.WriteLine("  folderjpg [opciones]");
+        Console.WriteLine("  folderjpg [opciones] <ruta>");
         Console.WriteLine();
         Console.WriteLine("Opciones:");
         Console.WriteLine("  --help     Muestra este texto de ayuda");
         Console.WriteLine("  --lang xx  Fuerza el idioma");
         Console.WriteLine("  --version  Muestra la versión del programa");
+        Console.WriteLine();
+        Console.WriteLine("Argumentos:");
+        Console.WriteLine("  ruta       La ruta al directorio a procesar");
+        Console.WriteLine("             Si no se proporciona ninguna ruta, no se hace nada");
+        Console.WriteLine("             Si no se encuentra la ruta, se muestra un mensaje de error");
+        Console.WriteLine("             Si la ruta no es un directorio, se muestra un mensaje de error");
+        Console.WriteLine("             Si la ruta es un archivo, se muestra un mensaje de error");
+        Console.WriteLine("             Si la ruta es un directorio, el programa lo procesa de forma recursiva");
+        Console.WriteLine("");
+        Console.WriteLine("Ejemplos:");
+        Console.WriteLine("  folderjpg");
+        Console.WriteLine("  folderjpg --help");
+        Console.WriteLine("  folderjpg --lang es");
+        Console.WriteLine("  folderjpg --version");
+        Console.WriteLine("  folderjpg \"C:\\Users\\usuario\\Pictures\"");
+        Console.WriteLine("  folderjpg \"C:\\Users\\usuario\\Music\"");
+        Console.WriteLine("  folderjpg \"C:\\Users\\usuario\\Biblioteca de calibre\"");
     }
 
 }// End of Program
