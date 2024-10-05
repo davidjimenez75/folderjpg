@@ -6,7 +6,7 @@ using System.Linq;
 public class Program
 {
     private const string VERSION = "24.10.05";
-    private const string DEBUG = "true";
+    private const string DEBUG = "false";
 
     // Entry point of the application
     public static void Main(string[] args)
@@ -45,11 +45,15 @@ public class Program
                     DisplayVersion();
                     return;
             }
+
+            //if the args are not help, lang or version, then show the error message
+            Console.WriteLine("Invalid option. Use --help to see the available options.");
+            return;
         }
 
         string currentDirectory = Directory.GetCurrentDirectory();
         ProcessDirectory(currentDirectory);
-        Console.WriteLine("Proceso completado.");
+        Console.WriteLine("Job Finished");
     }
 
 
@@ -65,13 +69,17 @@ public class Program
     {
         try
         {
-            // Get all folder.jpg files in the current directory
-            string[] jpgFiles = Directory.GetFiles(directory, "folder.jpg", SearchOption.TopDirectoryOnly);
-            
-            // Get all cover.jpg files in the current directory
-            string[] jpgFiles = Directory.GetFiles(directory, "cover.jpg", SearchOption.TopDirectoryOnly);
+            // Get directory name if folder.jpg exists
+            string[] folderJpgFiles = Directory.GetFiles(directory, "folder.jpg", SearchOption.TopDirectoryOnly);
+
+            // Get directory name if cover.jpg exists
+            string[] coverJpgFiles = Directory.GetFiles(directory, "cover.jpg", SearchOption.TopDirectoryOnly);
+
+            // Combine the folder.jpg and cover.jpg files into a single array to process
+            string[] jpgFiles = folderJpgFiles.Concat(coverJpgFiles).ToArray();
 
 
+            // loop through the jpg files
             foreach (string jpgFile in jpgFiles)
             {
                 string? directoryName = Path.GetDirectoryName(jpgFile);
@@ -83,26 +91,26 @@ public class Program
 
                 if (File.Exists(Path.Combine(directoryName, "desktop.ini")))
                 {
-                    Console.WriteLine($"A desktop.ini file already exists in the directory {directoryName}");
+                    Console.WriteLine($"- desktop.ini already exists in: \"{directoryName}\"");
                     continue;
                 }
 
-                if (DEBUG)
+                if (DEBUG == "true")
                 {
                     // If debug mode exist only show information
-                    Console.WriteLine($"- FOLDER={directoryName}");
+                    Console.WriteLine($"### \"{directoryName}\"");
 
                     if (File.Exists(Path.Combine(directoryName, "desktop.ini")))
                     {
-                        Console.WriteLine($"- {directoryName}/desktop.ini");
+                        Console.WriteLine($"- \"{directoryName}\\desktop.ini\"");
                     }
                     if (File.Exists(Path.Combine(directoryName, "folder.jpg")))
                     {
-                        Console.WriteLine($"-  {directoryName}/folder.jpg");
+                        Console.WriteLine($"- \"{directoryName}\\folder.jpg\"");
                     }
                     if (File.Exists(Path.Combine(directoryName, "cover.jpg")))
                     {
-                        Console.WriteLine($"-  {directoryName}/cover.jpg");
+                        Console.WriteLine($"- \"{directoryName}\\cover.jpg\"");
                     }
 
                 }
@@ -113,21 +121,21 @@ public class Program
 
                     // New line to separate directories
                     Console.WriteLine();
-                    Console.WriteLine();
 
                     // Show the current directory being processed
-                    Console.WriteLine($"### Processing directory: {directoryName}");
+                    Console.WriteLine($"### Processing: \"{directoryName}\"");
+                    Console.WriteLine();
 
                     // Convert the jpg file to a 256x256 icon
-                    Console.WriteLine($"- ConvertToIcon({jpgFile}, {icoFileName});");
+                    Console.WriteLine($"- Found jpg: \"{jpgFile}\"");
                     ConvertToIcon(jpgFile, icoFileName);
 
                     // Create the desktop.ini file
-                    Console.WriteLine($"- CreateDesktopIniFile({directoryName}, folderjpg-{randomString}.ico);");
+                    Console.WriteLine($"- Creating icon: \"{directoryName}\\folderjpg-{randomString}.ico\"");
                     CreateDesktopIniFile(directoryName, $"folderjpg-{randomString}.ico");
 
                     // FIXME: Refreshing icon cache for current folder
-                    Console.WriteLine($"- Refreshing icon cache for current folder...");
+                    Console.WriteLine($"- Refreshing icon cache");
                     System.Diagnostics.Process.Start("ie4uinit.exe", "-show");
 
                     // Processed the jpg file
@@ -212,7 +220,9 @@ public class Program
     // HELP EN - help in english
     private static void DisplayHelpEnglish()
     {
-        Console.WriteLine("folderjpg - Automatically set folder icons from folder.jpg files");
+        Console.WriteLine("folderjpg v" + VERSION);
+        Console.WriteLine();
+        Console.WriteLine("Automatically set folder icons from folder.jpg and cover.jpg files");
         Console.WriteLine();
         Console.WriteLine("Usage:");
         Console.WriteLine("  folderjpg [options]");
@@ -226,7 +236,9 @@ public class Program
     // HELP ES - help in spanish
     private static void DisplayHelpSpanish()
     {
-        Console.WriteLine("folderjpg - Establece automáticamente los iconos de las carpetas a partir de los archivos folder.jpg");
+        Console.WriteLine("folderjpg v" + VERSION);
+        Console.WriteLine();
+        Console.WriteLine("Crea iconos en las subcarpetas a partir de los archivos folder.jpg y cover.jpg");
         Console.WriteLine();
         Console.WriteLine("Uso:");
         Console.WriteLine("  folderjpg [opciones]");
