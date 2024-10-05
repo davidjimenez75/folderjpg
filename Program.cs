@@ -5,9 +5,9 @@ using System.Linq;
 
 public class Program
 {
-    private const string VERSION = "1.0.0";
+    private const string VERSION = "24.10.05";
 
-    // Punto de entrada de la aplicación
+    // Entry point of the application
     public static void Main(string[] args)
     {
         if (args.Length > 0)
@@ -28,26 +28,15 @@ public class Program
         Console.WriteLine("Proceso completado.");
     }
 
-    // Muestra la información de ayuda
-    private static void DisplayHelp()
-    {
-        Console.WriteLine("Uso: folderjpg [OPCIÓN]");
-        Console.WriteLine("Procesa archivos folder.jpg en el directorio actual y sus subdirectorios.");
-        Console.WriteLine();
-        Console.WriteLine("Opciones:");
-        Console.WriteLine("  --help        Muestra esta ayuda");
-        Console.WriteLine("  --version     Muestra la versión del programa");
-        Console.WriteLine();
-        Console.WriteLine("Sin opciones, el programa procesará el directorio actual y sus subdirectorios.");
-    }
 
-    // Muestra la versión del programa
+
+    // Show the version of the program on console   
     private static void DisplayVersion()
     {
-        Console.WriteLine($"folderjpg versión {VERSION}");
+        Console.WriteLine($"folderjpg v{VERSION}");
     }
 
-    // Procesa un directorio y todos sus subdirectorios
+    // Process the directory and its subdirectories
     public static void ProcessDirectory(string directory)
     {
         try
@@ -87,7 +76,7 @@ public class Program
                 Console.WriteLine($"- CreateDesktopIniFile({directoryName}, folderjpg-{randomString}.ico);");
                 CreateDesktopIniFile(directoryName, $"folderjpg-{randomString}.ico");
 
-                // Refrescando el caché de iconos para la carpeta actual
+                // FIXME: Refrescando el caché de iconos para la carpeta actual
                 Console.WriteLine($"- Refreshing icon cache for current folder...");
                 System.Diagnostics.Process.Start("ie4uinit.exe", "-show");
 
@@ -107,7 +96,7 @@ public class Program
         }
     }
 
-    // Convierte un archivo jpg a un icono de 256x256
+    // Convert and resize the image to an icon of 256x256
     public static void ConvertToIcon(string inputPath, string outputPath)
     {
         try
@@ -125,7 +114,7 @@ public class Program
         }
     }
 
-    // Crea un archivo desktop.ini en el directorio especificado
+    // Create the desktop.ini in the directory processed
     public static void CreateDesktopIniFile(string directory, string iconFileName)
     {
         string desktopIniPath = Path.Combine(directory, "desktop.ini");
@@ -139,7 +128,7 @@ public class Program
         di.Attributes |= FileAttributes.ReadOnly;
     }
 
-    // Genera una cadena aleatoria de la longitud especificada
+    // Generate a random string of a given length
     public static string GenerateRandomString(int length)
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -147,4 +136,53 @@ public class Program
         return new string(Enumerable.Repeat(chars, length)
             .Select(s => s[random.Next(s.Length)]).ToArray());
     }
-}
+
+
+    // Return the laguage of the system
+    public static string GetSystemLanguage()
+    {
+        return System.Globalization.CultureInfo.InstalledUICulture.TwoLetterISOLanguageName;
+    }
+
+    // Show the help information on console
+    private static void DisplayHelp()
+    {
+
+        string language = GetSystemLanguage();
+        if (language == "es")
+        {
+            DisplayHelpSpanish();
+        }
+        else
+        {
+            DisplayHelpEnglish();
+        }
+    }
+
+    // HELP EN - help in english
+    private static void DisplayHelpEnglish()
+    {
+        Console.WriteLine("folderjpg - Automatically set folder icons from folder.jpg files");
+        Console.WriteLine();
+        Console.WriteLine("Usage:");
+        Console.WriteLine("  folderjpg [options]");
+        Console.WriteLine();
+        Console.WriteLine("Options:");
+        Console.WriteLine("  --help     Display this help text");
+        Console.WriteLine("  --version  Display the version of the program");
+    }
+
+    // HELP ES - help in spanish
+    private static void DisplayHelpSpanish()
+    {
+        Console.WriteLine("folderjpg - Establece automáticamente los iconos de las carpetas a partir de los archivos folder.jpg");
+        Console.WriteLine();
+        Console.WriteLine("Uso:");
+        Console.WriteLine("  folderjpg [opciones]");
+        Console.WriteLine();
+        Console.WriteLine("Opciones:");
+        Console.WriteLine("  --help     Muestra este texto de ayuda");
+        Console.WriteLine("  --version  Muestra la versión del programa");
+    }
+
+}// End of Program
