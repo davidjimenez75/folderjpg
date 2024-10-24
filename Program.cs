@@ -5,7 +5,7 @@ using System.Linq;
 
 public class Program
 {
-    public const string VERSION = "2024.10.05.1335";
+    public const string VERSION = "2024.10.24.2228";
     private const string DEBUG = "false";
 
     // Entry point of the application
@@ -180,9 +180,12 @@ public class Program
                     Console.WriteLine($"- Creating icon: \"{directoryName}\\folderjpg-{randomString}.ico\"");
                     CreateDesktopIniFile(directoryName, $"folderjpg-{randomString}.ico");
 
-                    // FIXME: Refreshing icon cache for current folder
-                    Console.WriteLine($"- Refreshing icon cache");
-                    System.Diagnostics.Process.Start("ie4uinit.exe", "-show");
+                    // FIXME: Refreshing icon cache for current folder only for Window environment
+                    if (Environment.OSVersion.Platform != PlatformID.Unix)
+                    {
+                        Console.WriteLine($"- Refreshing icon cache");
+                        System.Diagnostics.Process.Start("ie4uinit.exe", "-show");
+                    }
                 }
                 Console.WriteLine();
             }
