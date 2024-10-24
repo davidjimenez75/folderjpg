@@ -39,6 +39,12 @@ dotnet publish -r win-x64 -c Release /p:PublishSingleFile=true /p:IncludeNativeL
 ```
 
 
+### Compile Release verson in only one folderjpg binary file for Linux
+
+```
+dotnet publish -r linux-x64 -c Release --self-contained=true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
+```
+
 
 ## HELP
 
