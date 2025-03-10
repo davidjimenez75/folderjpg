@@ -5,7 +5,7 @@ using System.Linq;
 
 public class Program
 {
-    public const string VERSION = "2024.10.24.2228";
+    public const string VERSION = "2025.03.10.1621";
     private const string DEBUG = "false";
 
     // Entry point of the application
