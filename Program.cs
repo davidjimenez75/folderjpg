@@ -5,8 +5,8 @@ using System.Linq;
 
 public class Program
 {
-    public const string VERSION = "2025.05.03.1412";
-    private const string DEBUG = "false";
+    public const string VERSION = "2025.05.03.1522";
+    private const bool DEBUG = false;
 
     // Entry point of the application
     public static void Main(string[] args)
@@ -143,7 +143,7 @@ public class Program
                     continue;
                 }
 
-                if (DEBUG == "true")
+                if (DEBUG)
                 {
                     // If debug mode exist only show information
                     Console.WriteLine($"### \"{directoryName}\"");
