@@ -125,7 +125,7 @@ public class Program
     }
 
     // Process the directory and its subdirectories
-    static void ProcessDirectory(string directory)
+    public static void ProcessDirectory(string directory)
     {
         try
         {
@@ -160,51 +160,29 @@ public class Program
                     continue;
                 }
 
-                if (DEBUG)
+                string randomString = GenerateRandomString(6);
+                string icoFileName = Path.Combine(directoryName, $"folderjpg-{randomString}.ico");
+
+                // New line to separate directories
+                Console.WriteLine();
+
+                // Show the current directory being processed
+                Console.WriteLine($"### folderjpg \"{directoryName}\\\"");
+                Console.WriteLine();
+
+                // Convert the jpg file to a 256x256 icon
+                Console.WriteLine($"- Found jpg: \"{jpgFile}\"");
+                ConvertToIcon(jpgFile, icoFileName);
+
+                // Create the desktop.ini file
+                Console.WriteLine($"- Creating icon: \"{directoryName}\\folderjpg-{randomString}.ico\"");
+                CreateDesktopIniFile(directoryName, $"folderjpg-{randomString}.ico");
+
+                // FIXME: Refreshing icon cache for current folder only for Window environment
+                if (Environment.OSVersion.Platform != PlatformID.Unix)
                 {
-                    // If debug mode exist only show information
-                    Console.WriteLine($"### \"{directoryName}\"");
-
-                    if (File.Exists(Path.Combine(directoryName, "desktop.ini")))
-                    {
-                        Console.WriteLine($"- \"{directoryName}\\desktop.ini\"");
-                    }
-                    if (File.Exists(Path.Combine(directoryName, "folder.jpg")))
-                    {
-                        Console.WriteLine($"- \"{directoryName}\\folder.jpg\"");
-                    }
-                    if (File.Exists(Path.Combine(directoryName, "cover.jpg")))
-                    {
-                        Console.WriteLine($"- \"{directoryName}\\cover.jpg\"");
-                    }
-
-                }
-                else
-                {
-                    string randomString = GenerateRandomString(6);
-                    string icoFileName = Path.Combine(directoryName, $"folderjpg-{randomString}.ico");
-
-                    // New line to separate directories
-                    Console.WriteLine();
-
-                    // Show the current directory being processed
-                    Console.WriteLine($"### folderjpg \"{directoryName}\\\"");
-                    Console.WriteLine();
-
-                    // Convert the jpg file to a 256x256 icon
-                    Console.WriteLine($"- Found jpg: \"{jpgFile}\"");
-                    ConvertToIcon(jpgFile, icoFileName);
-
-                    // Create the desktop.ini file
-                    Console.WriteLine($"- Creating icon: \"{directoryName}\\folderjpg-{randomString}.ico\"");
-                    CreateDesktopIniFile(directoryName, $"folderjpg-{randomString}.ico");
-
-                    // FIXME: Refreshing icon cache for current folder only for Window environment
-                    if (Environment.OSVersion.Platform != PlatformID.Unix)
-                    {
-                        Console.WriteLine($"- Refreshing icon cache");
-                        System.Diagnostics.Process.Start("ie4uinit.exe", "-show");
-                    }
+                    Console.WriteLine($"- Refreshing icon cache");
+                    System.Diagnostics.Process.Start("ie4uinit.exe", "-show");
                 }
                 Console.WriteLine();
             }
@@ -222,7 +200,7 @@ public class Program
     }
 
     // Convert and resize the image to an icon of 256x256
-    static void ConvertToIcon(string inputPath, string outputPath)
+    public static void ConvertToIcon(string inputPath, string outputPath)
     {
         // Convert the jpg file to an icon file with multiple sizes from 16 to 256 pixels
         try
