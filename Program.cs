@@ -5,7 +5,7 @@ using System.Linq;
 
 public class Program
 {
-    public const string VERSION = "2025.05.03.2052";
+    public const string VERSION = "2025.05.03.2230";
     private const bool DEBUG = false;
     private static readonly Random _random = new Random();
 
@@ -268,7 +268,8 @@ public class Program
     // Return the language of the system
     static string GetSystemLanguage()
     {
-        return System.Globalization.CultureInfo.InstalledUICulture.TwoLetterISOLanguageName;
+        // Use CurrentUICulture instead of InstalledUICulture
+        return System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
     }
 
     // Show the help information on console
@@ -296,7 +297,7 @@ public class Program
                 DisplayHelpChinese();
                 break;
             default:
-                DisplayHelpEnglish();
+                DisplayHelpEnglish(); // Default to English if language not supported or detected
                 break;
         }
     }

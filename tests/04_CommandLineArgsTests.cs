@@ -3,7 +3,14 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Collections.Generic; // Added for IEnumerable
+using System.Globalization; // Added for CultureInfo
+using System.Threading; // Added for Thread
 
+// Define a collection fixture to disable parallelization for console tests
+[CollectionDefinition("NonParallelConsoleTests", DisableParallelization = true)]
+public class NonParallelConsoleCollection { }
+
+[Collection("NonParallelConsoleTests")] // Apply the collection attribute
 public class CommandLineArgsTests
 {
     // Helper method
@@ -35,12 +42,29 @@ public class CommandLineArgsTests
     [MemberData(nameof(HelpArgumentsData))]
     public void Main_HelpArguments_DisplaysHelpMessage(string[] args)
     {
-        // Act
-        string output = RunMainAndCaptureOutput(args);
+        // Arrange
+        var originalUiCulture = Thread.CurrentThread.CurrentUICulture;
+        var originalCulture = Thread.CurrentThread.CurrentCulture;
+        try
+        {
+            // Set culture to English (US) to ensure English default help
+            var englishCulture = new CultureInfo("en-US");
+            Thread.CurrentThread.CurrentUICulture = englishCulture;
+            Thread.CurrentThread.CurrentCulture = englishCulture; // Set both
 
-        // Assert
-        Assert.Contains("Usage:", output, StringComparison.OrdinalIgnoreCase); // Common string in help messages
-        Assert.Contains("folderjpg [options] <path>", output, StringComparison.OrdinalIgnoreCase);
+            // Act
+            string output = RunMainAndCaptureOutput(args);
+
+            // Assert
+            Assert.Contains("Usage:", output, StringComparison.OrdinalIgnoreCase); // Common string in help messages
+            Assert.Contains("folderjpg [options] <path>", output, StringComparison.OrdinalIgnoreCase);
+        }
+        finally
+        {
+            // Restore original cultures
+            Thread.CurrentThread.CurrentUICulture = originalUiCulture;
+            Thread.CurrentThread.CurrentCulture = originalCulture;
+        }
     }
 
     // Data source for version arguments

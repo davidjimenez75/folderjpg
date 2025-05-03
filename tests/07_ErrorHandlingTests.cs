@@ -1,7 +1,11 @@
 using Xunit;
 using System;
 using System.IO;
+using System.Globalization;
+using System.Threading;
 
+// Apply the non-parallel collection attribute
+[Collection("NonParallelConsoleTests")]
 public class ErrorHandlingTests
 {
     [Fact]

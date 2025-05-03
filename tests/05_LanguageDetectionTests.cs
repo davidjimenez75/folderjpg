@@ -4,6 +4,8 @@ using System.IO;
 using System.Globalization;
 using System.Threading;
 
+// Apply the non-parallel collection attribute
+[Collection("NonParallelConsoleTests")]
 public class LanguageDetectionTests
 {
      // Helper method (copied from CommandLineArgsTests - consider a shared helper class later)
