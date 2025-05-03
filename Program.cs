@@ -95,6 +95,8 @@ public class Program
         Console.WriteLine("folderjpg v" + VERSION);
         Console.WriteLine();
         Console.WriteLine("No path provided. Use --help to see the available options.");
+        Console.WriteLine();
+        Console.WriteLine("Is you want to proceed the current directory, use: folderjpg .");
     }
 
 
