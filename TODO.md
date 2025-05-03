@@ -8,7 +8,7 @@ Here are some potential bugs and incoherences in the provided source code:
 - [_] 001 -- Incorrect comment: The comment says “If no arguments are passed, we dont to nothing”, but the code actually prints an error message. The comment should be updated for clarity.
 
 
-- [_] 002 -- Path existence check: When no arguments are passed, the message “Path not found. Use --help to see the available options.” is shown, which may be misleading since the user didn’t provide a path at all. A more accurate message would be “No path provided. Use --help to see the available options.”
+- [x] 002 -- Path existence check: When no arguments are passed, the message “Path not found. Use --help to see the available options.” is shown, which may be misleading since the user didn’t provide a path at all. A more accurate message would be “No path provided. Use --help to see the available options.”
 
 
 - [_] 003 -- DEBUG constant: The DEBUG constant is a string ("false" or "true") instead of a boolean. This is not idiomatic C# and could lead to errors if someone tries to use it as a boolean.

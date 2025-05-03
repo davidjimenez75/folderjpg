@@ -91,10 +91,10 @@ public class Program
                     }
             }
         }
-        // If no arguments are passed, we dont to nothing
+        // If no arguments are passed, show a clear message
         Console.WriteLine("folderjpg v" + VERSION);
         Console.WriteLine();
-        Console.WriteLine("Path not found. Use --help to see the available options.");
+        Console.WriteLine("No path provided. Use --help to see the available options.");
     }
 
 
