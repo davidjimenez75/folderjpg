@@ -7,6 +7,7 @@ public class Program
 {
     public const string VERSION = "2025.05.03.1522";
     private const bool DEBUG = false;
+    private static readonly Random _random = new Random();
 
     // Entry point of the application
     public static void Main(string[] args)
@@ -266,9 +267,8 @@ public class Program
     public static string GenerateRandomString(int length)
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        var random = new Random();
         return new string(Enumerable.Repeat(chars, length)
-            .Select(s => s[random.Next(s.Length)]).ToArray());
+            .Select(s => _random.Next(s.Length)).Select(i => chars[i]).ToArray());
     }
 
     // Return the language of the system

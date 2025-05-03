@@ -14,7 +14,7 @@ Here are some potential bugs and incoherences in the provided source code:
 - [x] 003 -- DEBUG constant: The DEBUG constant is a string ("false" or "true") instead of a boolean. This is not idiomatic C# and could lead to errors if someone tries to use it as a boolean.
 
 
-- [_] 004 -- Random instance: The GenerateRandomString method creates a new Random instance every time it is called. This can lead to duplicate values if called in quick succession. It’s better to use a static Random instance.
+- [x] 004 -- Random instance: The GenerateRandomString method creates a new Random instance every time it is called. This can lead to duplicate values if called in quick succession. It’s better to use a static Random instance.
 
 
 - [_] 005 -- Hardcoded language check: The language check in DisplayHelp only supports "es" for Spanish and defaults to English for anything else. This is fine, but it could be more extensible.
