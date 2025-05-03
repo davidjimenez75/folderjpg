@@ -17,7 +17,7 @@ Here are some potential bugs and incoherences in the provided source code:
 - [x] 004 -- Random instance: The GenerateRandomString method creates a new Random instance every time it is called. This can lead to duplicate values if called in quick succession. It’s better to use a static Random instance.
 
 
-- [_] 005 -- Hardcoded language check: The language check in DisplayHelp only supports "es" for Spanish and defaults to English for anything else. This is fine, but it could be more extensible.
+- [x] 005 -- Hardcoded language check: The language check in DisplayHelp only supports "es" for Spanish and defaults to English for anything else. This is fine, but it could be more extensible. (Added: fr, de, pt, it and zh)
 
 
 - [_] 006 -- File attribute handling: In CreateDesktopIniFile, the directory is set to ReadOnly after creating desktop.ini. This may cause issues if the user wants to modify the directory later.
