@@ -82,7 +82,12 @@ folderjpg "%USERPROFILE%\Music"
 folderjpg "%USERPROFILE%\Calibre Library"
 ```
 
+## TESTING
 
+The project includes a ProgramTests.cs file for unit tests. Run tests with:
+```
+dotnet test
+```
 
 
 
