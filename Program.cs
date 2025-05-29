@@ -5,9 +5,8 @@ using System.Linq;
 
 public class Program
 {
-    public const string VERSION = "2025.05.03.2230";
+    public const string VERSION = "2025.05.29.140203"; // Date and time of the last update in format YYYY.MM.DD.HHMMSS
     private const bool DEBUG = false;
-    private static readonly Random _random = new Random();
 
     // Entry point of the application
     public static void Main(string[] args)
@@ -160,8 +159,9 @@ public class Program
                     continue;
                 }
 
-                string randomString = GenerateRandomString(6);
-                string icoFileName = Path.Combine(directoryName, $"folderjpg-{randomString}.ico");
+                string normalizedPath = NormalizePath(directoryName);
+                string deterministicString = GenerateDeterministicString(normalizedPath, 6);
+                string icoFileName = Path.Combine(directoryName, $"folderjpg-{deterministicString}.ico");
 
                 // New line to separate directories
                 Console.WriteLine();
@@ -175,8 +175,8 @@ public class Program
                 ConvertToIcon(jpgFile, icoFileName);
 
                 // Create the desktop.ini file
-                Console.WriteLine($"- Creating icon: \"{directoryName}\\folderjpg-{randomString}.ico\"");
-                CreateDesktopIniFile(directoryName, $"folderjpg-{randomString}.ico");
+                Console.WriteLine($"- Creating icon: \"{directoryName}\\folderjpg-{deterministicString}.ico\"");
+                CreateDesktopIniFile(directoryName, $"folderjpg-{deterministicString}.ico");
 
                 // FIXME: Refreshing icon cache for current folder only for Window environment
                 if (Environment.OSVersion.Platform != PlatformID.Unix)
@@ -257,12 +257,20 @@ public class Program
         di.Attributes |= FileAttributes.ReadOnly;
     }
 
-    // Generate a random string of a given length
-    public static string GenerateRandomString(int length)
+    // Generate a deterministic string of a given length based on the directory path
+    public static string GenerateDeterministicString(string path, int length)
     {
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        const string chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+        string normalizedPath = NormalizePath(path);
+        Random random = new Random(normalizedPath.GetHashCode());
         return new string(Enumerable.Repeat(chars, length)
-            .Select(s => _random.Next(s.Length)).Select(i => chars[i]).ToArray());
+            .Select(s => random.Next(s.Length)).Select(i => chars[i]).ToArray());
+    }
+
+    // Normalize the path to lowercase and use '/' as separator
+    public static string NormalizePath(string path)
+    {
+        return path.ToLower().Replace('\\', '/');
     }
 
     // Return the language of the system

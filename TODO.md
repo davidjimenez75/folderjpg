@@ -1,43 +1,15 @@
 # TODO
 
-## Unit Testing Requirements
-
-This project requires comprehensive unit tests to ensure functionality and maintainability. 
-The following test cases should be implemented:
-
-- Cover core functionality including directory processing and image conversion
-- Test error handling paths for invalid inputs and edge cases
-- Verify command-line argument parsing logic
-- Validate language detection functionality
-- Ensure proper image conversion across various formats
-- Test directory traversal and processing
-- Verify desktop.ini file creation and formatting
-- Test icon cache refresh functionality for different operating systems
-
-Prioritize tests that verify the main application workflow and critical error paths.
-
-- [_] 9000. Change terminal to be able to see Chinese characters. (e.g., chcp 65001)
-
-- [_] 9001. Add tests for the main functionality of the program (e.g., ProcessDirectory, IconConversion).
-
-- [_] 9002. Add tests for the error handling paths (e.g., invalid image formats, file not found).
-
-- [_] 9003. Add tests for the command-line argument parsing.
-
-- [_] 9004. Add tests for the language detection logic.
-
-- [_] 9005. Add tests for the image conversion logic.
-
-- [_] 9006. Add tests for the directory processing logic.
-
-- [_] 9007. Add tests for the desktop.ini file creation logic.
-
-- [_] 9008. Add tests for the icon cache refresh logic.
+## NEW FEATURES
 
 
 
 
-## GitHub Copilot: Potential bugs and incoherences by COPILOT GPT-4.1 (PREVIEW)
+
+
+
+
+## 0. GitHub Copilot: Potential bugs and incoherences by COPILOT GPT-4.1
 
 Here are some potential bugs and incoherences in the provided source code:
 
@@ -71,7 +43,17 @@ Here are some potential bugs and incoherences in the provided source code:
 - [_] 010 -- Platform check: The code checks for PlatformID.Unix to decide whether to refresh the icon cache. This is correct, but it may not cover all non-Windows platforms (e.g., PlatformID.MacOSX).
 
 
-## GitHub Copilot: Here are the main bugs, inconsistencies, and areas for improvement I found in your code by o4-mini (Preview)
+- [_] 011 -- Magic strings: The code uses hardcoded strings for file names like "folder.jpg", "cover.jpg", etc. It would be better to define these as constants for maintainability.
+
+
+- [_] 012 -- Test coverage: The tests do not cover all functionality, especially error handling and edge cases. More comprehensive tests are needed to ensure robustness._]
+
+
+- [_] 013 -- The algorithm for generating the random string must be improved to ensure that it generates the same string with the same folder name. Currently, it generates a random string every time, which may lead to inconsistencies in icon generation.
+
+
+ 
+## 1. GitHub Copilot: Here are the main bugs, inconsistencies, and areas for improvement I found in your code by o4-mini (Preview)
 
 - [_] 1001. DEBUG as a string  
    • You use  
@@ -127,7 +109,7 @@ Here are some potential bugs and incoherences in the provided source code:
     • Fix: update comments to reflect actual behavior or remove stale ones.
 
 
-## GitHub Copilot: Here are the main bugs, inconsistencies, and areas for improvement I found in your code by Claude 3.7 Sonnet
+## 2. GitHub Copilot: Here are the main bugs, inconsistencies, and areas for improvement I found in your code by Claude 3.7 Sonnet
 
 I see you've already documented several bugs and inconsistencies in your TODO.md file, which shows great awareness of code quality issues. After analyzing the source code further, I've identified some additional issues that weren't mentioned in your TODO file:
 
@@ -154,7 +136,9 @@ I see you've already documented several bugs and inconsistencies in your TODO.md
 Would you like me to propose fixes for any of these issues or continue with fixing the ones already identified in your TODO list?
 
 
-## GitHub Copilot: Here are the main bugs, inconsistencies, and areas for improvement I found in your code by Gemini 2.5 Pro (Preview)
+
+
+## 3. GitHub Copilot: Here are the main bugs, inconsistencies, and areas for improvement I found in your code by Gemini 2.5 Pro (Preview)
 
 - [_] 3001.  **`DEBUG` Constant Type:** The `DEBUG` constant is defined as a `string` (`"false"`) but used in comparisons like `DEBUG == "true"`. It's more idiomatic and less error-prone to use a `bool`: `private const bool DEBUG = false;` and compare directly: `if (DEBUG)`.
 
@@ -174,3 +158,41 @@ Would you like me to propose fixes for any of these issues or continue with fixi
 - [_] 3007.  **`desktop.ini` Logic:** The code checks if `desktop.ini` exists and skips processing if it does. This prevents overwriting existing customizations but also means if the source `folder.jpg` (or cover/front) is *updated*, the icon won't be regenerated. The logic might need refinement, perhaps checking if the existing `desktop.ini` points to a `folderjpg-*.ico` file and regenerating if the source image is newer.
 
 - [_] 3008.  **Platform Check:** `Environment.OSVersion.Platform != PlatformID.Unix` is used to gate the `ie4uinit.exe` call. A more robust check for Windows is `System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows)`.
+
+
+
+
+
+## 9. Unit Testing Requirements
+
+This project requires comprehensive unit tests to ensure functionality and maintainability. 
+The following test cases should be implemented:
+
+- Cover core functionality including directory processing and image conversion
+- Test error handling paths for invalid inputs and edge cases
+- Verify command-line argument parsing logic
+- Validate language detection functionality
+- Ensure proper image conversion across various formats
+- Test directory traversal and processing
+- Verify desktop.ini file creation and formatting
+- Test icon cache refresh functionality for different operating systems
+
+Prioritize tests that verify the main application workflow and critical error paths.
+
+- [_] 9000. Change terminal to be able to see Chinese characters. (e.g., chcp 65001)
+
+- [_] 9001. Add tests for the main functionality of the program (e.g., ProcessDirectory, IconConversion).
+
+- [_] 9002. Add tests for the error handling paths (e.g., invalid image formats, file not found).
+
+- [_] 9003. Add tests for the command-line argument parsing.
+
+- [_] 9004. Add tests for the language detection logic.
+
+- [_] 9005. Add tests for the image conversion logic.
+
+- [_] 9006. Add tests for the directory processing logic.
+
+- [_] 9007. Add tests for the desktop.ini file creation logic.
+
+- [_] 9008. Add tests for the icon cache refresh logic.
