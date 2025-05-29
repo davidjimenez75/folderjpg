@@ -109,11 +109,11 @@ public class CommandLineArgsTests
         string output = RunMainAndCaptureOutput(new string[] { invalidPath });
 
         // Assert
-        Assert.Contains("Path not found.", output, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains($"Path not found: {invalidPath}", output, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Use --help", output, StringComparison.OrdinalIgnoreCase);
     }
 
-     [Fact]
+    [Fact]
     public void Main_FilePathArgument_DisplaysPathNotFoundOrNotDirectoryMessage()
     {
         // Arrange
@@ -128,9 +128,9 @@ public class CommandLineArgsTests
             string output = RunMainAndCaptureOutput(new string[] { filePath });
 
             // Assert
-            // Current behavior treats existing files as "Path not found" because it only checks Directory.Exists
-            Assert.Contains("Path not found.", output, StringComparison.OrdinalIgnoreCase);
-            // TODO: Ideally, this should be a specific error like "Path must be a directory"
+            Assert.Contains($"The path provided is a file, not a directory: {filePath}", output, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("Please provide a valid directory path.", output, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("Use --help for more information.", output, StringComparison.OrdinalIgnoreCase);
         }
         finally
         {
