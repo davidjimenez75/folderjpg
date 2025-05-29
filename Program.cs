@@ -2,10 +2,13 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography; // Added for SHA256
+using System.Text; // Added for Encoding
 
 public class Program
 {
-    public const string VERSION = "2025.05.29.140203"; // Date and time of the last update in format YYYY.MM.DD.HHMMSS
+    // Updated version to reflect the hashing fix
+    public const string VERSION = "2025.05.29.144500"; 
     private const bool DEBUG = false;
 
     // Entry point of the application
@@ -17,15 +20,7 @@ public class Program
             {
                 // Help options
                 case "--help":
-                    DisplayHelp();
-                    return;
-
-                // Help options
                 case "-help":
-                    DisplayHelp();
-                    return;
-
-                // Help options
                 case "-h":
                     DisplayHelp();
                     return;
@@ -68,20 +63,8 @@ public class Program
 
                 // Version options
                 case "--version":
-                    DisplayVersion();
-                    return;
-                
-                // Version options
                 case "-version":
-                    DisplayVersion();
-                    return;
-                
-                // Version options
                 case "--v":
-                    DisplayVersion();
-                    return;
-
-                // Version options
                 case "-v":
                     DisplayVersion();
                     return;
@@ -97,12 +80,22 @@ public class Program
                         Console.WriteLine("Job Finished");
                         return;
                     }
+                    // Check if the argument is a file, and show a specific error
+                    else if (File.Exists(args[0]))
+                    {
+                        Console.WriteLine("folderjpg v" + VERSION);
+                        Console.WriteLine();
+                        Console.WriteLine($"The path provided is a file, not a directory: {args[0]}");
+                        Console.WriteLine("Please provide a valid directory path. Use --help for more information.");
+                        return;
+                    }
                     else
                     {
                         // if the path does not exist, show an error message
                         Console.WriteLine("folderjpg v" + VERSION);
                         Console.WriteLine();
-                        Console.WriteLine("Path not found. Use --help to see the available options.");
+                        Console.WriteLine($"Path not found: {args[0]}");
+                        Console.WriteLine("Use --help to see the available options.");
                         return;
                     }
             }
@@ -159,8 +152,16 @@ public class Program
                     continue;
                 }
 
-                string normalizedPath = NormalizePath(directoryName);
-                string deterministicString = GenerateDeterministicString(normalizedPath, 6);
+                // Robustly get the last folder name
+                string tempDirectoryName = directoryName.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                string lastFolderName = Path.GetFileName(tempDirectoryName); 
+                
+                if (string.IsNullOrEmpty(lastFolderName)) 
+                {
+                    lastFolderName = string.IsNullOrEmpty(tempDirectoryName) ? "root_placeholder" : tempDirectoryName;
+                }
+                
+                string deterministicString = GenerateDeterministicString(lastFolderName, 6);
                 string icoFileName = Path.Combine(directoryName, $"folderjpg-{deterministicString}.ico");
 
                 // New line to separate directories
@@ -257,20 +258,38 @@ public class Program
         di.Attributes |= FileAttributes.ReadOnly;
     }
 
-    // Generate a deterministic string of a given length based on the directory path
-    public static string GenerateDeterministicString(string path, int length)
+    // Generate a deterministic string of a given length based on an input string (e.g., folder name)
+    public static string GenerateDeterministicString(string nameInput, int length)
     {
+        if (string.IsNullOrEmpty(nameInput))
+        {
+            // Fallback for empty input
+            const string fallbackChars = "abcdefghijklmnopqrstuvwxyz0123456789";
+            Random localRandom = new Random(); 
+            // Console.WriteLine($"[DEBUG] GenerateDeterministicString - Input: EMPTY, using fallback random."); // Optional: Keep if needed
+            return new string(Enumerable.Repeat(fallbackChars, length)
+                .Select(s => localRandom.Next(s.Length)).Select(i => fallbackChars[i]).ToArray());
+        }
+
         const string chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-        string normalizedPath = NormalizePath(path);
-        Random random = new Random(normalizedPath.GetHashCode());
+        string normalizedName = nameInput.ToLowerInvariant(); 
+        
+        // Use SHA256 for a stable hash, then use part of it as a seed for Random
+        int seed;
+        using (SHA256 sha256 = SHA256.Create())
+        {
+            byte[] inputBytes = Encoding.UTF8.GetBytes(normalizedName);
+            byte[] hashBytes = sha256.ComputeHash(inputBytes);
+            // Take the first 4 bytes of the hash to create an int seed
+            // This ensures the seed is consistent across platforms and processes
+            seed = BitConverter.ToInt32(hashBytes, 0);
+        }
+        
+        // Console.WriteLine($"[DEBUG] GenerateDeterministicString - Input: '{nameInput}', Normalized: '{normalizedName}', SHA256-based Seed: {seed}"); // Optional: Keep if needed
+
+        Random random = new Random(seed);
         return new string(Enumerable.Repeat(chars, length)
             .Select(s => random.Next(s.Length)).Select(i => chars[i]).ToArray());
-    }
-
-    // Normalize the path to lowercase and use '/' as separator
-    public static string NormalizePath(string path)
-    {
-        return path.ToLower().Replace('\\', '/');
     }
 
     // Return the language of the system
