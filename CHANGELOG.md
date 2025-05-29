@@ -1,4 +1,8 @@
-# Changelog
+# CHANGELOG
+
+## 2025.05.29
+
+- Improved algorithm for folderjpg-XXXX.ico generation so same folder names will always generate same icon filename.
 
 ## 2024.10.10
 
