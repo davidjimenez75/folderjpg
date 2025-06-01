@@ -89,19 +89,8 @@ The project includes a ProgramTests.cs file for unit tests. Run tests with:
 dotnet test
 ```
 
+## Functional Diagram
 
+A functional diagram describing the application's workflow is available in PlantUML format at [docs/functional_diagram.puml](docs/functional_diagram.puml).
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+To view the diagram, you can use an online PlantUML renderer (like the official one at www.plantuml.com/plantuml) or a local PlantUML tool. Simply copy the content of the `.puml` file into the renderer.
