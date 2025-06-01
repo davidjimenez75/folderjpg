@@ -1,0 +1,71 @@
+@startuml
+title Application Logic Flow
+
+start
+
+:Read Command Line Arguments;
+
+if (Argument provided?) then (No)
+  :Display "No path provided" message;
+  end
+else (Yes)
+  if (Is it a help flag\n(--help, -h)?) then (Yes)
+    :Detect system language;
+    :Display help in detected/specified language;
+    end
+  else (No)
+    if (Is it a version flag\n(--version, -v)?) then (Yes)
+      :Display version;
+      end
+    else (No)
+      if (Is it a language flag\n(--lang xx)?) then (Yes)
+        :Display help in specified language;
+        end
+      else (No)
+        if (Is the argument a valid directory path?) then (No\nor is a file, or not found)
+          :Display appropriate error message;
+          end
+        else (Yes\nPath is a valid directory)
+          :Start Recursive Directory Processing for the given path;
+          repeat
+            :For each directory (current or sub-directory);
+            :Search for `folder.jpg`, `cover.jpg`, `front.jpg`;
+            if (Image file found?) then (Yes)
+              if (desktop.ini already exists?) then (Yes)
+                :Skip to next image/directory;
+              else (No)
+                :Generate a deterministic ICO filename\n(e.g., folderjpg-XXXXXX.ico);
+                :Log processing information;
+                :Call ConvertToIcon function;
+                partition ConvertToIcon {
+                  :Use ImageMagick to load the JPG;
+                  :Create multiple sizes (16, 32, ..., 256);
+                  :Save as .ico file;
+                  if (Potential errors during conversion?) then (Yes)
+                    :Handle error;
+                  endif
+                }
+                :Call CreateDesktopIniFile function;
+                partition CreateDesktopIniFile {
+                  :Write [.ShellClassInfo] and IconResource to desktop.ini;
+                  :Set Hidden and System attributes for desktop.ini;
+                  :Set ReadOnly attribute for the current folder;
+                }
+                if (OS is Windows?) then (Yes)
+                  :(Windows Only) Refresh icon cache\n(ie4uinit.exe -show);
+                endif
+              endif
+            else (No)
+              :Continue to next directory/finish;
+            endif
+            :Recursively call processing for subdirectories;
+          repeat while (More subdirectories to process?)
+          :Display "Job Finished" message;
+          end
+        endif
+      endif
+    endif
+  endif
+endif
+
+@enduml
