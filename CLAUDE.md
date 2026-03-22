@@ -142,3 +142,20 @@ dotnet test
 ## Deployment
 
 For deployment, use the single-file executable build option for the target platform. The resulting executable is self-contained and doesn't require additional dependencies.
+
+## TODO.md Format
+
+Tasks in TODO.md follow this structure:
+- Each task is separated by a line of exactly 80 dashes: `--------------------------------------------------------------------------------`
+- Each task title is preceded by a Markdown H3 header (`###`)
+
+Example:
+```markdown
+--------------------------------------------------------------------------------
+### - [_] 1234. Task description here
+
+Task details (optional multi-line content).
+
+--------------------------------------------------------------------------------
+### - [x] 1235. Another completed task
+```

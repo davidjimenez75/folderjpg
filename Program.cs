@@ -10,7 +10,7 @@ using System.Text;
 public class Program
 {
     // Updated version to reflect the hashing fix
-    public const string VERSION = "2026.03.22.134624";
+    public const string VERSION = "2026.03.22.150104";
     private const bool DEBUG = false;
 
     // Entry point of the application
