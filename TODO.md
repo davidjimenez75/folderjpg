@@ -2,6 +2,15 @@
 
 ## NEW FEATURES
 
+- [x] 5001. Añadir icono a la aplicacion
+- [x] 5003.
+- [x] 5004.
+- [x] 5005.
+- [x] 5006. Mejorar el refresco de cache de iconos en dos niveles:
+  - Nivel 1 (automatico, en cada carpeta procesada): añadir atributo System a la carpeta + actualizar LastWriteTime + SHChangeNotify por carpeta especifica con SHCNE_UPDATEDIR.
+  - Nivel 2 (parametro --refresh): matar explorer.exe, borrar iconcache_*.db y reiniciar explorer.exe para limpieza total. Documentar en ayuda EN y ES. Añadir soporte para folder.ico con maxima prioridad: si existe un fichero folder.ico en la carpeta, usarlo directamente como icono ignorando cualquier color ico (azure.ico, red.ico, etc.) y cualquier jpg (folder.jpg, cover.jpg, front.jpg). Es el icono de mayor prioridad. Mejorar el refresco de cache de iconos en Windows 11: sustituir ie4uinit.exe por SHChangeNotify via P/Invoke, que es la API oficial del shell de Windows y no requiere reiniciar Explorer. Añadir soporte para iconos de color predefinidos: si en una carpeta existe alguno de los siguientes ficheros .ico, usarlo directamente como icono de la carpeta ignorando cualquier folder.jpg/cover.jpg/front.jpg. Lista de iconos reconocidos: azure.ico, black.ico, blue.ico, brown.ico, gray.ico, green.ico, lemon.ico, orange.ico, pink.ico, red.ico, violet.ico, white.ico, yellow.ico.
+- [x] 5002. Actualizar el paquete "Magick.NET-Q8-AnyCPU" a la version mas reciente para eliminar los warnings de vulnerabilidades conocidas (actualmente en 13.10.0).: Usar `@icon.ico` como icono del ejecutable `folderjpg.exe` para que el explorador de archivos de Windows lo muestre correctamente. Requiere añadir `<ApplicationIcon>icon.ico</ApplicationIcon>` en el `.csproj` y asegurarse de que el fichero `icon.ico` esté en la raiz del proyecto.
+
 
 
 

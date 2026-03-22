@@ -82,6 +82,24 @@ folderjpg "%USERPROFILE%\Music"
 folderjpg "%USERPROFILE%\Calibre Library"
 ```
 
+## ICON CACHE REFRESH
+
+If Windows Explorer keeps showing old folder icons after running folderjpg, use the hard refresh option:
+
+```
+folderjpg --refresh
+```
+
+This command will:
+1. Kill Explorer
+2. Delete all `iconcache_*.db` and `thumbcache_*.db` files
+3. Restart Explorer
+
+> **⚠️ Administrator required:** `--refresh` must be run from a CMD or terminal opened as **Administrator**, otherwise the cache files cannot be deleted.
+>
+> To open CMD as Administrator: search for `cmd` in the Start menu → right-click → **Run as administrator**
+
+
 ## TESTING
 
 The project includes a ProgramTests.cs file for unit tests. Run tests with:

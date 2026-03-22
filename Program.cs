@@ -2,13 +2,15 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography; // Added for SHA256
-using System.Text; // Added for Encoding
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Security.Principal;
+using System.Text;
 
 public class Program
 {
     // Updated version to reflect the hashing fix
-    public const string VERSION = "2025.05.29.144500"; 
+    public const string VERSION = "2026.03.22.134624";
     private const bool DEBUG = false;
 
     // Entry point of the application
@@ -69,6 +71,25 @@ public class Program
                     DisplayVersion();
                     return;
 
+                // Hard refresh icon cache
+                case "--refresh":
+                    Console.WriteLine("folderjpg v" + VERSION);
+                    Console.WriteLine();
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    {
+                        bool isAdmin = new WindowsPrincipal(WindowsIdentity.GetCurrent())
+                            .IsInRole(WindowsBuiltInRole.Administrator);
+                        if (!isAdmin)
+                        {
+                            Console.WriteLine("WARNING: --refresh requires Administrator privileges to delete the icon cache files.");
+                            Console.WriteLine("Please run this command from a CMD or terminal opened as Administrator.");
+                            Console.WriteLine();
+                            return;
+                        }
+                    }
+                    HardRefreshIconCache();
+                    return;
+
                 // Detect if the user is inserting a path as an argument
                 default:
                     if (Directory.Exists(args[0]))
@@ -116,76 +137,156 @@ public class Program
         Console.WriteLine($"folderjpg v{VERSION}");
     }
 
+    [DllImport("shell32.dll", CharSet = CharSet.Auto)]
+    private static extern void SHChangeNotify(int wEventId, int uFlags, IntPtr dwItem1, IntPtr dwItem2);
+
+    // Level 1: per-folder refresh — System attribute + LastWriteTime + SHCNE_UPDATEDIR
+    private static void RefreshIconCacheForDirectory(string directory)
+    {
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            return;
+
+        // Add System attribute to the folder so Windows re-reads desktop.ini
+        DirectoryInfo di = new DirectoryInfo(directory);
+        di.Attributes |= FileAttributes.System;
+
+        // Touch the folder timestamp to signal Explorer a change occurred
+        Directory.SetLastWriteTime(directory, DateTime.Now);
+
+        // Notify shell of update for this specific directory (SHCNE_UPDATEDIR | SHCNF_PATHW)
+        SHChangeNotify(0x00001000, 0x0005, Marshal.StringToHGlobalUni(directory), IntPtr.Zero);
+    }
+
+    // Level 2: hard refresh — kill Explorer, delete icon cache, restart Explorer
+    public static void HardRefreshIconCache()
+    {
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            Console.WriteLine("Hard refresh is only supported on Windows.");
+            return;
+        }
+
+        Console.WriteLine("Killing Explorer...");
+        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+        {
+            FileName = "taskkill",
+            Arguments = "/f /im explorer.exe",
+            UseShellExecute = false,
+            CreateNoWindow = true
+        })?.WaitForExit();
+
+        // Wait for Explorer to fully release the cache files
+        System.Threading.Thread.Sleep(2000);
+
+        string cacheDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "Microsoft", "Windows", "Explorer");
+        if (Directory.Exists(cacheDir))
+        {
+            int deleted = 0;
+            foreach (string f in Directory.GetFiles(cacheDir, "iconcache_*.db")
+                                          .Concat(Directory.GetFiles(cacheDir, "thumbcache_*.db")))
+            {
+                try
+                {
+                    File.Delete(f);
+                    Console.WriteLine($"Deleted: {Path.GetFileName(f)}");
+                    deleted++;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Could not delete {Path.GetFileName(f)}: {ex.Message}");
+                }
+            }
+            Console.WriteLine($"{deleted} cache file(s) deleted.");
+        }
+
+        Console.WriteLine("Restarting Explorer...");
+        System.Diagnostics.Process.Start("explorer.exe");
+        Console.WriteLine("Done.");
+    }
+
+    // Color ico filenames that take priority over jpg files
+    private static readonly string[] ColorIcoNames = {
+        "azure.ico", "black.ico", "blue.ico", "brown.ico", "gray.ico", "green.ico",
+        "lemon.ico", "orange.ico", "pink.ico", "red.ico", "violet.ico",
+        "white.ico", "yellow.ico"
+    };
+
     // Process the directory and its subdirectories
     public static void ProcessDirectory(string directory)
     {
         try
         {
-            // Get directory name if folder.jpg exists
-            string[] folderJpgFiles = Directory.GetFiles(directory, "folder.jpg", SearchOption.TopDirectoryOnly);
-
-            // Get directory name if cover.jpg exists
-            string[] coverJpgFiles = Directory.GetFiles(directory, "cover.jpg", SearchOption.TopDirectoryOnly);
-
-            // Get directory name if front.jpg exists
-            string[] frontJpgFiles = Directory.GetFiles(directory, "front.jpg", SearchOption.TopDirectoryOnly);
-
-            // Combine the folder.jpg and cover.jpg files into a single array to process
-            string[] jpgFiles = folderJpgFiles.Concat(coverJpgFiles).ToArray();
-
-            // Combine the folder.jpg, cover.jpg and front.jpg files into a single array to process
-            jpgFiles = jpgFiles.Concat(frontJpgFiles).ToArray();
-
-            // loop through the jpg files
-            foreach (string jpgFile in jpgFiles)
+            // Check if desktop.ini already exists
+            if (File.Exists(Path.Combine(directory, "desktop.ini")))
             {
-                string? directoryName = Path.GetDirectoryName(jpgFile);
-                if (directoryName == null)
+                Console.WriteLine($"- desktop.ini already exists in: \"{directory}\"");
+            }
+            else
+            {
+                // Check for folder.ico first (maximum priority)
+                string folderIcoPath = Path.Combine(directory, "folder.ico");
+                if (File.Exists(folderIcoPath))
                 {
-                    Console.WriteLine($"Failed to get the directory for {jpgFile}");
-                    continue;
-                }
-
-                if (File.Exists(Path.Combine(directoryName, "desktop.ini")))
-                {
-                    Console.WriteLine($"- desktop.ini already exists in: \"{directoryName}\"");
-                    continue;
-                }
-
-                // Robustly get the last folder name
-                string tempDirectoryName = directoryName.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-                string lastFolderName = Path.GetFileName(tempDirectoryName); 
-                
-                if (string.IsNullOrEmpty(lastFolderName)) 
-                {
-                    lastFolderName = string.IsNullOrEmpty(tempDirectoryName) ? "root_placeholder" : tempDirectoryName;
-                }
-                
-                string deterministicString = GenerateDeterministicString(lastFolderName, 6);
-                string icoFileName = Path.Combine(directoryName, $"folderjpg-{deterministicString}.ico");
-
-                // New line to separate directories
-                Console.WriteLine();
-
-                // Show the current directory being processed
-                Console.WriteLine($"### folderjpg \"{directoryName}\\\"");
-                Console.WriteLine();
-
-                // Convert the jpg file to a 256x256 icon
-                Console.WriteLine($"- Found jpg: \"{jpgFile}\"");
-                ConvertToIcon(jpgFile, icoFileName);
-
-                // Create the desktop.ini file
-                Console.WriteLine($"- Creating icon: \"{directoryName}\\folderjpg-{deterministicString}.ico\"");
-                CreateDesktopIniFile(directoryName, $"folderjpg-{deterministicString}.ico");
-
-                // FIXME: Refreshing icon cache for current folder only for Window environment
-                if (Environment.OSVersion.Platform != PlatformID.Unix)
-                {
+                    Console.WriteLine();
+                    Console.WriteLine($"### folderjpg \"{directory}\\\"");
+                    Console.WriteLine();
+                    Console.WriteLine($"- Found folder.ico: \"{folderIcoPath}\"");
+                    CreateDesktopIniFile(directory, "folder.ico");
+                    Console.WriteLine($"- Creating desktop.ini with icon: \"folder.ico\"");
                     Console.WriteLine($"- Refreshing icon cache");
-                    System.Diagnostics.Process.Start("ie4uinit.exe", "-show");
+                    RefreshIconCacheForDirectory(directory);
+                    Console.WriteLine();
                 }
-                Console.WriteLine();
+                // Check for color ico files second
+                else if (ColorIcoNames.Select(name => Path.Combine(directory, name)).FirstOrDefault(File.Exists) is string colorIco)
+                {
+                    string icoFileName = Path.GetFileName(colorIco);
+                    Console.WriteLine();
+                    Console.WriteLine($"### folderjpg \"{directory}\\\"");
+                    Console.WriteLine();
+                    Console.WriteLine($"- Found color ico: \"{colorIco}\"");
+                    CreateDesktopIniFile(directory, icoFileName);
+                    Console.WriteLine($"- Creating desktop.ini with icon: \"{icoFileName}\"");
+                    Console.WriteLine($"- Refreshing icon cache");
+                    RefreshIconCacheForDirectory(directory);
+                    Console.WriteLine();
+                }
+                else
+                {
+                    // No color ico found, proceed with jpg files
+                    string[] jpgFiles = Directory.GetFiles(directory, "folder.jpg", SearchOption.TopDirectoryOnly)
+                        .Concat(Directory.GetFiles(directory, "cover.jpg", SearchOption.TopDirectoryOnly))
+                        .Concat(Directory.GetFiles(directory, "front.jpg", SearchOption.TopDirectoryOnly))
+                        .ToArray();
+
+                    foreach (string jpgFile in jpgFiles)
+                    {
+                        string tempDirectoryName = directory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                        string lastFolderName = Path.GetFileName(tempDirectoryName);
+
+                        if (string.IsNullOrEmpty(lastFolderName))
+                            lastFolderName = string.IsNullOrEmpty(tempDirectoryName) ? "root_placeholder" : tempDirectoryName;
+
+                        string deterministicString = GenerateDeterministicString(lastFolderName, 6);
+                        string icoFileName = Path.Combine(directory, $"folderjpg-{deterministicString}.ico");
+
+                        Console.WriteLine();
+                        Console.WriteLine($"### folderjpg \"{directory}\\\"");
+                        Console.WriteLine();
+                        Console.WriteLine($"- Found jpg: \"{jpgFile}\"");
+                        ConvertToIcon(jpgFile, icoFileName);
+                        Console.WriteLine($"- Creating icon: \"{directory}\\folderjpg-{deterministicString}.ico\"");
+                        CreateDesktopIniFile(directory, $"folderjpg-{deterministicString}.ico");
+
+                        if (Environment.OSVersion.Platform != PlatformID.Unix)
+                        {
+                            Console.WriteLine($"- Refreshing icon cache");
+                            System.Diagnostics.Process.Start("ie4uinit.exe", "-show");
+                        }
+                        Console.WriteLine();
+                    }
+                }
             }
 
             string[] subdirectories = Directory.GetDirectories(directory);
@@ -212,9 +313,9 @@ public class Program
                 using (var originalImage = new MagickImage(inputPath))
                 {
                     // Define standard ICO sizes
-                    int[] sizes = { 16, 32, 48, 64, 128, 256 };
+                    uint[] sizes = { 16, 32, 48, 64, 128, 256 };
 
-                    foreach (int size in sizes)
+                    foreach (uint size in sizes)
                     {
                         using (var image = originalImage.Clone())
                         {
@@ -343,6 +444,7 @@ public class Program
         Console.WriteLine("  --help     Display this help text");
         Console.WriteLine("  --lang xx  Force the language");
         Console.WriteLine("  --version  Display the version of the program");
+        Console.WriteLine("  --refresh  Hard refresh the Windows icon cache (kills Explorer, deletes iconcache_*.db, restarts Explorer)");
         Console.WriteLine();
         Console.WriteLine("Arguments:");
         Console.WriteLine("  path       The path to the directory to process");
@@ -378,6 +480,7 @@ public class Program
         Console.WriteLine("  --help     Muestra este texto de ayuda");
         Console.WriteLine("  --lang xx  Fuerza el idioma");
         Console.WriteLine("  --version  Muestra la versión del programa");
+        Console.WriteLine("  --refresh  Refresco total de la cache de iconos de Windows (cierra Explorer, borra iconcache_*.db, reinicia Explorer)");
         Console.WriteLine();
         Console.WriteLine("Argumentos:");
         Console.WriteLine("  ruta       La ruta al directorio a procesar");

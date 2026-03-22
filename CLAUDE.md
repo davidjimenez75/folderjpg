@@ -93,10 +93,11 @@ The application supports several command-line options:
 ## Modifying the Code
 
 ### Version Updates
-Update the VERSION constant in Program.cs when making changes:
+Update the VERSION constant in Program.cs when making changes. When asked to do a "bump" or version update, use the **current system date and time** in the format `YYYY.MM.DD.HHmmss`:
 ```csharp
-public const string VERSION = "2025.05.03.1412";
+public const string VERSION = "2025.05.03.141200";
 ```
+To get the current date and time, run: `date +"%Y.%m.%d.%H%M%S"`
 
 ### Debug Mode
 Set the DEBUG constant to "true" to enable debug mode:
