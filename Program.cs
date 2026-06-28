@@ -288,11 +288,8 @@ public class Program
                         Console.WriteLine($"- Creating icon: \"{directory}\\folderjpg-{deterministicString}.ico\"");
                         CreateDesktopIniFile(directory, $"folderjpg-{deterministicString}.ico");
 
-                        if (Environment.OSVersion.Platform != PlatformID.Unix)
-                        {
-                            Console.WriteLine($"- Refreshing icon cache");
-                            System.Diagnostics.Process.Start("ie4uinit.exe", "-show");
-                        }
+                        Console.WriteLine($"- Refreshing icon cache");
+                        RefreshIconCacheForDirectory(directory);
                         Console.WriteLine();
                     }
                 }

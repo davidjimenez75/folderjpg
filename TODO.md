@@ -59,7 +59,7 @@ Here are some potential bugs and incoherences in the provided source code:
 ### - [_] 009 -- Redundant file existence check: In the DEBUG block, the code checks for the existence of desktop.ini, folder.jpg, and cover.jpg, but this is already checked earlier.
 
 --------------------------------------------------------------------------------
-### - [_] 010 -- Platform check: The code checks for PlatformID.Unix to decide whether to refresh the icon cache. This is correct, but it may not cover all non-Windows platforms (e.g., PlatformID.MacOSX).
+### - [x] 010 -- Platform check: The code checks for PlatformID.Unix to decide whether to refresh the icon cache. This is correct, but it may not cover all non-Windows platforms (e.g., PlatformID.MacOSX).
 
 --------------------------------------------------------------------------------
 ### - [x] 011 -- Magic strings: The code uses hardcoded strings for file names like "folder.jpg", "cover.jpg", etc. It would be better to define these as constants for maintainability.
@@ -116,7 +116,7 @@ Here are some potential bugs and incoherences in the provided source code:
    - Fix: pull these into well‑named constants for easier maintenance.
 
 --------------------------------------------------------------------------------
-### - [_] 1008. Platform detection  
+### - [x] 1008. Platform detection  
    - You check only `PlatformID.Unix` to skip the Windows‐only `ie4uinit.exe` call.  
    - Fix: use `RuntimeInformation.IsOSPlatform(OSPlatform.Windows)` to be explicit.
 
@@ -222,7 +222,7 @@ Would you like me to propose fixes for any of these issues or continue with fixi
 ### - [_] 3007.  **`desktop.ini` Logic:** The code checks if `desktop.ini` exists and skips processing if it does. This prevents overwriting existing customizations but also means if the source `folder.jpg` (or cover/front) is *updated*, the icon won't be regenerated. The logic might need refinement, perhaps checking if the existing `desktop.ini` points to a `folderjpg-*.ico` file and regenerating if the source image is newer.
 
 --------------------------------------------------------------------------------
-### - [_] 3008.  **Platform Check:** `Environment.OSVersion.Platform != PlatformID.Unix` is used to gate the `ie4uinit.exe` call. A more robust check for Windows is `System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows)`.
+### - [x] 3008.  **Platform Check:** `Environment.OSVersion.Platform != PlatformID.Unix` is used to gate the `ie4uinit.exe` call. A more robust check for Windows is `System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows)`.
 
 
 
