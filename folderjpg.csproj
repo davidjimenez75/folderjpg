@@ -12,6 +12,7 @@
     <FileVersion>$(VERSION)</FileVersion>
     <PublishSingleFile>true</PublishSingleFile>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <OutputPath>C:\ulb\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,12 +30,9 @@
   </ItemGroup>
 
   <Target Name="CopyFilesToOutputFolder" AfterTargets="Publish" Condition="'$(Configuration)' == 'Release'">
-    <PropertyGroup>
-      <OutputFolder>c:\ulb\folderjpg\</OutputFolder>
-    </PropertyGroup>
-    <MakeDir Directories="$(OutputFolder)" />
-    <Copy SourceFiles="$(PublishDir)folderjpg.exe" DestinationFiles="$(OutputFolder)folderjpg.exe" />
-    <Message Text="Deployed to $(OutputFolder)folderjpg.exe" Importance="high" />
+    <MakeDir Directories="C:\ulb\" />
+    <Copy SourceFiles="$(PublishDir)folderjpg.exe" DestinationFiles="C:\ulb\folderjpg.exe" />
+    <Message Text="Deployed to C:\ulb\folderjpg.exe" Importance="high" />
   </Target>
 
   <Target Name="SetVersion" BeforeTargets="CoreCompile">
