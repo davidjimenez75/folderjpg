@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security.Principal;
@@ -9,7 +10,10 @@ using System.Text;
 
 public class Program
 {
-    public const string VERSION = "2026.03.22.150104";
+    public static readonly string VERSION =
+        typeof(Program).Assembly
+            .GetCustomAttribute<System.Reflection.AssemblyInformationalVersionAttribute>()
+            ?.InformationalVersion ?? "unknown";
     private const bool DEBUG = false;
 
     private const string FileName_FolderJpg  = "folder.jpg";
