@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -10,6 +10,8 @@
     <Version>$(VERSION)</Version>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <FileVersion>$(VERSION)</FileVersion>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,10 +32,10 @@
     <PropertyGroup>
       <OutputFolder>c:\ulb\folderjpg\</OutputFolder>
     </PropertyGroup>
-    <Message Text="Copiando archivos a $(OutputFolder)" Importance="high" />
+    <MakeDir Directories="$(OutputFolder)" />
     <Copy SourceFiles="$(PublishDir)folderjpg.exe" DestinationFiles="$(OutputFolder)folderjpg.exe" />
+    <Message Text="Deployed to $(OutputFolder)folderjpg.exe" Importance="high" />
   </Target>
-
 
   <Target Name="SetVersion" BeforeTargets="CoreCompile">
     <PropertyGroup>
