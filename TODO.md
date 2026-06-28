@@ -4,7 +4,7 @@
 ## NEW FEATURES
 
 --------------------------------------------------------------------------------
-### - [x] 5001. Añadir icono a la aplicacion
+### - [x] 5001. Add icon to the application
 
 --------------------------------------------------------------------------------
 ### - [x] 5003.
@@ -16,14 +16,14 @@
 ### - [x] 5005.
 
 --------------------------------------------------------------------------------
-### - [x] 5006. Mejorar el refresco de cache de iconos en dos niveles:
+### - [x] 5006. Improve icon cache refresh in two levels:
   
-  - Nivel 1 (automatico, en cada carpeta procesada): añadir atributo System a la carpeta + actualizar LastWriteTime + SHChangeNotify por carpeta especifica con SHCNE_UPDATEDIR.
+  - Level 1 (automatic, for each processed folder): add System attribute to the folder + update LastWriteTime + SHChangeNotify per specific folder with SHCNE_UPDATEDIR.
   
-  - Nivel 2 (parametro --refresh): matar explorer.exe, borrar iconcache_*.db y reiniciar explorer.exe para limpieza total. Documentar en ayuda EN y ES. Añadir soporte para folder.ico con maxima prioridad: si existe un fichero folder.ico en la carpeta, usarlo directamente como icono ignorando cualquier color ico (azure.ico, red.ico, etc.) y cualquier jpg (folder.jpg, cover.jpg, front.jpg). Es el icono de mayor prioridad. Mejorar el refresco de cache de iconos en Windows 11: sustituir ie4uinit.exe por SHChangeNotify via P/Invoke, que es la API oficial del shell de Windows y no requiere reiniciar Explorer. Añadir soporte para iconos de color predefinidos: si en una carpeta existe alguno de los siguientes ficheros .ico, usarlo directamente como icono de la carpeta ignorando cualquier folder.jpg/cover.jpg/front.jpg. Lista de iconos reconocidos: azure.ico, black.ico, blue.ico, brown.ico, gray.ico, green.ico, lemon.ico, orange.ico, pink.ico, red.ico, violet.ico, white.ico, yellow.ico.
+  - Level 2 (--refresh parameter): kill explorer.exe, delete iconcache_*.db and restart explorer.exe for a complete cleanup. Document in EN and ES help. Add support for folder.ico with maximum priority: if a folder.ico file exists in the folder, use it directly as the icon ignoring any color ico (azure.ico, red.ico, etc.) and any jpg (folder.jpg, cover.jpg, front.jpg). It is the highest priority icon. Improve icon cache refresh in Windows 11: replace ie4uinit.exe with SHChangeNotify via P/Invoke, which is the official Windows shell API and does not require restarting Explorer. Add support for predefined color icons: if any of the following .ico files exist in a folder, use it directly as the folder icon ignoring any folder.jpg/cover.jpg/front.jpg. List of recognized icons: azure.ico, black.ico, blue.ico, brown.ico, gray.ico, green.ico, lemon.ico, orange.ico, pink.ico, red.ico, violet.ico, white.ico, yellow.ico.
 
 --------------------------------------------------------------------------------
-### - [x] 5002. Actualizar el paquete "Magick.NET-Q8-AnyCPU" a la version mas reciente para eliminar los warnings de vulnerabilidades conocidas (actualmente en 13.10.0).: Usar `@icon.ico` como icono del ejecutable `folderjpg.exe` para que el explorador de archivos de Windows lo muestre correctamente. Requiere añadir `<ApplicationIcon>icon.ico</ApplicationIcon>` en el `.csproj` y asegurarse de que el fichero `icon.ico` esté en la raiz del proyecto.
+### - [x] 5002. Update the "Magick.NET-Q8-AnyCPU" package to the latest version to remove known vulnerability warnings (currently at 13.10.0). Use `@icon.ico` as the executable icon `folderjpg.exe` so that Windows File Explorer displays it correctly. Requires adding `<ApplicationIcon>icon.ico</ApplicationIcon>` in `.csproj` and ensuring the `icon.ico` file is in the project root.
 
 
 --------------------------------------------------------------------------------
@@ -50,7 +50,7 @@ Here are some potential bugs and incoherences in the provided source code:
 ### - [_] 006 -- File attribute handling: In CreateDesktopIniFile, the directory is set to ReadOnly after creating desktop.ini. This may cause issues if the user wants to modify the directory later.
 
 --------------------------------------------------------------------------------
-### - [_] 007 -- Unused SkiaSharp reference: The project references SkiaSharp, but the code does not use it.
+### - [x] 007 -- Unused SkiaSharp reference: The project references SkiaSharp, but the code does not use it.
 
 --------------------------------------------------------------------------------
 ### - [_] 008 -- Error handling: In ProcessDirectory, if an exception occurs, it prints the error but continues execution. This is generally fine for a CLI tool, but it could be improved by providing more context or options for the user.
@@ -91,7 +91,7 @@ Here are some potential bugs and incoherences in the provided source code:
    - Fix: use a single static `Random` instance (or `RandomNumberGenerator`) to avoid collisions.
 
 --------------------------------------------------------------------------------
-### - [_] 1003. Unused SkiaSharp reference  
+### - [x] 1003. Unused SkiaSharp reference  
    - The project references SkiaSharp but never uses it.  
    - Fix: remove the PackageReference or actually use SkiaSharp in image processing.
 
