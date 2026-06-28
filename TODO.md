@@ -62,7 +62,7 @@ Here are some potential bugs and incoherences in the provided source code:
 ### - [_] 010 -- Platform check: The code checks for PlatformID.Unix to decide whether to refresh the icon cache. This is correct, but it may not cover all non-Windows platforms (e.g., PlatformID.MacOSX).
 
 --------------------------------------------------------------------------------
-### - [_] 011 -- Magic strings: The code uses hardcoded strings for file names like "folder.jpg", "cover.jpg", etc. It would be better to define these as constants for maintainability.
+### - [x] 011 -- Magic strings: The code uses hardcoded strings for file names like "folder.jpg", "cover.jpg", etc. It would be better to define these as constants for maintainability.
 
 --------------------------------------------------------------------------------
 ### - [_] 012 -- Test coverage: The tests do not cover all functionality, especially error handling and edge cases. More comprehensive tests are needed to ensure robustness._]
@@ -111,7 +111,7 @@ Here are some potential bugs and incoherences in the provided source code:
    - Fix: change to “No path provided. Use --help for usage.”
 
 --------------------------------------------------------------------------------
-### - [_] 1007. Hard‑coded icon filenames & magic strings  
+### - [x] 1007. Hard‑coded icon filenames & magic strings  
    - “folder.jpg”, “cover.jpg”, “front.jpg”, “desktop.ini” etc. are sprinkled everywhere.  
    - Fix: pull these into well‑named constants for easier maintenance.
 
@@ -215,7 +215,7 @@ Would you like me to propose fixes for any of these issues or continue with fixi
 
 
 --------------------------------------------------------------------------------
-### - [_] 3006.  **Hardcoded Filenames:** Strings like "folder.jpg", "cover.jpg", "front.jpg", and "desktop.ini" are used directly in the code. Defining these as constants would improve maintainability.
+### - [x] 3006.  **Hardcoded Filenames:** Strings like "folder.jpg", "cover.jpg", "front.jpg", and "desktop.ini" are used directly in the code. Defining these as constants would improve maintainability.
 
 
 --------------------------------------------------------------------------------

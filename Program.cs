@@ -9,9 +9,16 @@ using System.Text;
 
 public class Program
 {
-    // Updated version to reflect the hashing fix
     public const string VERSION = "2026.03.22.150104";
     private const bool DEBUG = false;
+
+    private const string FileName_FolderJpg  = "folder.jpg";
+    private const string FileName_CoverJpg   = "cover.jpg";
+    private const string FileName_FrontJpg   = "front.jpg";
+    private const string FileName_IndexJpg   = "index.jpg";
+    private const string FileName_IndexPng   = "index.png";
+    private const string FileName_FolderIco  = "folder.ico";
+    private const string FileName_DesktopIni = "desktop.ini";
 
     // Entry point of the application
     public static void Main(string[] args)
@@ -218,22 +225,22 @@ public class Program
         try
         {
             // Check if desktop.ini already exists
-            if (File.Exists(Path.Combine(directory, "desktop.ini")))
+            if (File.Exists(Path.Combine(directory, FileName_DesktopIni)))
             {
                 Console.WriteLine($"- desktop.ini already exists in: \"{directory}\"");
             }
             else
             {
                 // Check for folder.ico first (maximum priority)
-                string folderIcoPath = Path.Combine(directory, "folder.ico");
+                string folderIcoPath = Path.Combine(directory, FileName_FolderIco);
                 if (File.Exists(folderIcoPath))
                 {
                     Console.WriteLine();
                     Console.WriteLine($"### folderjpg \"{directory}\\\"");
                     Console.WriteLine();
                     Console.WriteLine($"- Found folder.ico: \"{folderIcoPath}\"");
-                    CreateDesktopIniFile(directory, "folder.ico");
-                    Console.WriteLine($"- Creating desktop.ini with icon: \"folder.ico\"");
+                    CreateDesktopIniFile(directory, FileName_FolderIco);
+                    Console.WriteLine($"- Creating desktop.ini with icon: \"{FileName_FolderIco}\"");
                     Console.WriteLine($"- Refreshing icon cache");
                     RefreshIconCacheForDirectory(directory);
                     Console.WriteLine();
@@ -255,9 +262,11 @@ public class Program
                 else
                 {
                     // No color ico found, proceed with jpg files
-                    string[] jpgFiles = Directory.GetFiles(directory, "folder.jpg", SearchOption.TopDirectoryOnly)
-                        .Concat(Directory.GetFiles(directory, "cover.jpg", SearchOption.TopDirectoryOnly))
-                        .Concat(Directory.GetFiles(directory, "front.jpg", SearchOption.TopDirectoryOnly))
+                    string[] jpgFiles = Directory.GetFiles(directory, FileName_FolderJpg, SearchOption.TopDirectoryOnly)
+                        .Concat(Directory.GetFiles(directory, FileName_CoverJpg, SearchOption.TopDirectoryOnly))
+                        .Concat(Directory.GetFiles(directory, FileName_FrontJpg, SearchOption.TopDirectoryOnly))
+                        .Concat(Directory.GetFiles(directory, FileName_IndexJpg, SearchOption.TopDirectoryOnly))
+                        .Concat(Directory.GetFiles(directory, FileName_IndexPng, SearchOption.TopDirectoryOnly))
                         .ToArray();
 
                     foreach (string jpgFile in jpgFiles)
@@ -348,7 +357,7 @@ public class Program
     // Create the desktop.ini in the directory processed
     public static void CreateDesktopIniFile(string directory, string iconFileName)
     {
-        string desktopIniPath = Path.Combine(directory, "desktop.ini");
+        string desktopIniPath = Path.Combine(directory, FileName_DesktopIni);
         string content = $"[.ShellClassInfo]\r\nIconResource={iconFileName},0";
 
         File.WriteAllText(desktopIniPath, content);
