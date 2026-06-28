@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 2026.06.28
+
+- Added support for `index.jpg` and `index.png` as recognised cover image filenames.
+- Extracted hardcoded filenames (`folder.jpg`, `cover.jpg`, `front.jpg`, `desktop.ini`, etc.) to named constants for maintainability.
+- Fixed platform detection: replaced deprecated `PlatformID.Unix` check and `ie4uinit.exe` call with `RuntimeInformation.IsOSPlatform(OSPlatform.Windows)`, fixing incorrect behaviour on macOS.
+- Removed unused SkiaSharp dependency, reducing binary size.
+- Translated `IDEAS.md` and `TODO.md` to English.
+
 ## 2025.05.29
 
 - Improved algorithm for folderjpg-XXXX.ico generation so same folder names will always generate same icon filename.
