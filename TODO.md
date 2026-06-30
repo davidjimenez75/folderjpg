@@ -76,7 +76,7 @@ Here are some potential bugs and incoherences in the provided source code:
 
 
 --------------------------------------------------------------------------------
-### - [_] 1001. DEBUG as a string  
+### - [x] 1001. DEBUG as a string  
    - You use  
      `private const string DEBUG = "false";`  
      but treat it like a boolean.  
@@ -96,17 +96,17 @@ Here are some potential bugs and incoherences in the provided source code:
    - Fix: remove the PackageReference or actually use SkiaSharp in image processing.
 
 --------------------------------------------------------------------------------
-### - [_] 1004. Path‐vs‐file detection  
+### - [x] 1004. Path‐vs‐file detection  
    - In `Main`, if `args[0]` exists but is a file, you still hit the “Path not found” branch.  
    - Fix: explicitly check `File.Exists(args[0])` and surface a “must be a directory” error.
 
 --------------------------------------------------------------------------------
-### - [_] 1005. Help‑flag handling is duplicated  
+### - [x] 1005. Help‑flag handling is duplicated  
    - You have three separate cases for `--help`, `-help`, and `-h` that all just call `DisplayHelp()`.  
    - Fix: collapse them via fall‑through (e.g. `case "-h": case "--help": …`).
 
 --------------------------------------------------------------------------------
-### - [_] 1006. Misleading “no args” message  
+### - [x] 1006. Misleading “no args” message  
    - When no args are passed you write “Path not found,” which implies the user passed something incorrect.  
    - Fix: change to “No path provided. Use --help for usage.”
 
@@ -191,7 +191,7 @@ Would you like me to propose fixes for any of these issues or continue with fixi
 
 
 --------------------------------------------------------------------------------
-### - [_] 3001.  **`DEBUG` Constant Type:** The `DEBUG` constant is defined as a `string` (`"false"`) but used in comparisons like `DEBUG == "true"`. It's more idiomatic and less error-prone to use a `bool`: `private const bool DEBUG = false;` and compare directly: `if (DEBUG)`.
+### - [x] 3001.  **`DEBUG` Constant Type:** The `DEBUG` constant is defined as a `string` (`"false"`) but used in comparisons like `DEBUG == "true"`. It's more idiomatic and less error-prone to use a `bool`: `private const bool DEBUG = false;` and compare directly: `if (DEBUG)`.
 
 
 --------------------------------------------------------------------------------
@@ -207,7 +207,7 @@ Would you like me to propose fixes for any of these issues or continue with fixi
 
 
 --------------------------------------------------------------------------------
-### - [_] 3005.  **Argument Handling in `Main`:**
+### - [x] 3005.  **Argument Handling in `Main`:**
 
     -   **Path vs. File:** The `default` case checks `Directory.Exists(args[0])`. If the path exists but is a *file*, it will fall through to the "Path not found" error, which is misleading. You should add an explicit `File.Exists` check to provide a more accurate error message (e.g., "Path must be a directory, not a file.").
     -   **No Argument Message:** When `args.Length == 0`, the message "Path not found" is printed. A clearer message would be "No path provided. Use --help for usage."

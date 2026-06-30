@@ -3,6 +3,8 @@
 > **IMPORTANT:** Always start every response to the user with the prefix `🤖 FOLDERJPG:` in monospace (backticks).
 >
 > **IMPORTANT:** All technical content must be in English regardless of the language the user writes in: function names, variable names, class names, comments, documentation, commit messages, file names, and any code or technical output. Conversational replies may match the user's language, but all technical artifacts are always English.
+>
+> **IMPORTANT:** Never add a `Co-Authored-By:` trailer to commit messages. Do not sign or co-sign commits in any way.
 
 ## Project Overview
 
@@ -104,9 +106,9 @@ The application supports several command-line options:
 The build system reads `VERSION.md` automatically and embeds it into the assembly. `Program.VERSION` reads from the assembly at runtime — do **not** edit it manually.
 
 ### Debug Mode
-Set the DEBUG constant to "true" to enable debug mode:
+Set the DEBUG constant to `true` to enable debug mode:
 ```csharp
-private const string DEBUG = "true";
+private const bool DEBUG = true;
 ```
 In debug mode, the application will only display information without making changes.
 
