@@ -201,3 +201,55 @@
 *Fixed: if desktop.ini references a folderjpg-*.ico, the source image timestamp is compared to the .ico timestamp; if source is newer the old files are deleted and the icon is regenerated. Custom desktop.ini files are always skipped.*
 
 --------------------------------------------------------------------------------
+## 9. Unit Testing Requirements
+
+--------------------------------------------------------------------------------
+### - [x] 9000. Change terminal to be able to see Chinese characters. (e.g., chcp 65001)
+*Fixed: Console.OutputEncoding = Encoding.UTF8 set at startup in Main.*
+
+--------------------------------------------------------------------------------
+### - [x] 9001. Add tests for the main functionality of the program (e.g., ProcessDirectory, IconConversion).
+
+--------------------------------------------------------------------------------
+### - [x] 9002. Add tests for the error handling paths (e.g., invalid image formats, file not found).
+
+--------------------------------------------------------------------------------
+### - [x] 9003. Add tests for the command-line argument parsing.
+
+--------------------------------------------------------------------------------
+### - [x] 9004. Add tests for the language detection logic.
+
+--------------------------------------------------------------------------------
+### - [x] 9005. Add tests for the image conversion logic.
+
+--------------------------------------------------------------------------------
+### - [x] 9006. Add tests for the directory processing logic.
+
+--------------------------------------------------------------------------------
+### - [x] 9007. Add tests for the desktop.ini file creation logic.
+
+--------------------------------------------------------------------------------
+### - [x] 9008. Add tests for the icon cache refresh logic.
+
+--------------------------------------------------------------------------------
+## 0. GitHub Copilot: Potential bugs and incoherences by COPILOT GPT-4.1
+
+--------------------------------------------------------------------------------
+### - [x] 012 -- Test coverage: The tests do not cover all functionality, especially error handling and edge cases. More comprehensive tests are needed to ensure robustness.
+*Fixed: 42 tests now cover all major paths including icon priorities, timestamp regeneration, size guard, writer parameter, CLI args, language detection, and error handling.*
+
+--------------------------------------------------------------------------------
+## 1. GitHub Copilot: Here are the main bugs, inconsistencies, and areas for improvement I found in your code by o4-mini (Preview)
+
+--------------------------------------------------------------------------------
+### - [x] 1010. Tests don't cover core functionality
+*Fixed: ConvertToIcon, ProcessDirectory, and error paths are now fully tested.*
+
+--------------------------------------------------------------------------------
+## 2. GitHub Copilot: Here are the main bugs, inconsistencies, and areas for improvement I found in your code by Claude 3.7 Sonnet
+
+--------------------------------------------------------------------------------
+### - [x] 2010. Incomplete test coverage: There are no tests for the main functionality of the program (e.g., ProcessDirectory, IconConversion).
+*Fixed: see 012 and 1010.*
+
+--------------------------------------------------------------------------------
