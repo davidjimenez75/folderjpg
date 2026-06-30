@@ -7,6 +7,8 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 public class Program
 {
@@ -14,6 +16,9 @@ public class Program
         typeof(Program).Assembly
             .GetCustomAttribute<System.Reflection.AssemblyInformationalVersionAttribute>()
             ?.InformationalVersion ?? "unknown";
+    private static readonly object _consoleLock = new object();
+    private const long MaxImageFileBytes = 100L * 1024 * 1024; // 100 MB
+
     private const string FileName_FolderJpg  = "folder.jpg";
     private const string FileName_CoverJpg   = "cover.jpg";
     private const string FileName_FrontJpg   = "front.jpg";
@@ -191,142 +196,177 @@ public class Program
     };
 
     // Process the directory and its subdirectories
-    public static void ProcessDirectory(string directory)
+    public static void ProcessDirectory(string directory, TextWriter? writer = null)
     {
+        writer ??= Console.Out;
         try
         {
-            // Check if desktop.ini already exists
-            if (File.Exists(Path.Combine(directory, FileName_DesktopIni)))
+            string desktopIniPath = Path.Combine(directory, FileName_DesktopIni);
+            bool shouldProcess = true;
+
+            if (File.Exists(desktopIniPath))
             {
-                Console.WriteLine($"- desktop.ini already exists in: \"{directory}\"");
+                string iniContent = File.ReadAllText(desktopIniPath);
+                var match = Regex.Match(iniContent, @"IconResource=(folderjpg-[^,]+\.ico),0");
+                if (match.Success)
+                {
+                    // Created by folderjpg — regenerate only if source image is newer
+                    string existingIcoPath = Path.Combine(directory, match.Groups[1].Value);
+                    string[] sources = GetSourceImages(directory);
+                    DateTime icoTime = File.Exists(existingIcoPath) ? File.GetLastWriteTime(existingIcoPath) : DateTime.MinValue;
+                    if (sources.Length > 0 && File.GetLastWriteTime(sources[0]) > icoTime)
+                    {
+                        if (File.Exists(existingIcoPath))
+                        {
+                            File.SetAttributes(existingIcoPath, FileAttributes.Normal);
+                            File.Delete(existingIcoPath);
+                        }
+                        File.SetAttributes(desktopIniPath, FileAttributes.Normal);
+                        File.Delete(desktopIniPath);
+                        writer.WriteLine($"- Source image updated, regenerating: \"{directory}\"");
+                    }
+                    else
+                    {
+                        writer.WriteLine($"- desktop.ini already exists (up to date) in: \"{directory}\"");
+                        shouldProcess = false;
+                    }
+                }
+                else
+                {
+                    // Custom desktop.ini — always skip
+                    writer.WriteLine($"- desktop.ini already exists in: \"{directory}\"");
+                    shouldProcess = false;
+                }
             }
-            else
+
+            if (shouldProcess)
             {
                 // Check for folder.ico first (maximum priority)
                 string folderIcoPath = Path.Combine(directory, FileName_FolderIco);
                 if (File.Exists(folderIcoPath))
                 {
-                    Console.WriteLine();
-                    Console.WriteLine($"### folderjpg \"{directory}\\\"");
-                    Console.WriteLine();
-                    Console.WriteLine($"- Found folder.ico: \"{folderIcoPath}\"");
+                    writer.WriteLine();
+                    writer.WriteLine($"### folderjpg \"{directory}\\\"");
+                    writer.WriteLine();
+                    writer.WriteLine($"- Found folder.ico: \"{folderIcoPath}\"");
                     CreateDesktopIniFile(directory, FileName_FolderIco);
-                    Console.WriteLine($"- Creating desktop.ini with icon: \"{FileName_FolderIco}\"");
-                    Console.WriteLine($"- Refreshing icon cache");
+                    writer.WriteLine($"- Creating desktop.ini with icon: \"{FileName_FolderIco}\"");
+                    writer.WriteLine($"- Refreshing icon cache");
                     RefreshIconCacheForDirectory(directory);
-                    Console.WriteLine();
+                    writer.WriteLine();
                 }
                 // Check for color ico files second
                 else if (ColorIcoNames.Select(name => Path.Combine(directory, name)).FirstOrDefault(File.Exists) is string colorIco)
                 {
                     string icoFileName = Path.GetFileName(colorIco);
-                    Console.WriteLine();
-                    Console.WriteLine($"### folderjpg \"{directory}\\\"");
-                    Console.WriteLine();
-                    Console.WriteLine($"- Found color ico: \"{colorIco}\"");
+                    writer.WriteLine();
+                    writer.WriteLine($"### folderjpg \"{directory}\\\"");
+                    writer.WriteLine();
+                    writer.WriteLine($"- Found color ico: \"{colorIco}\"");
                     CreateDesktopIniFile(directory, icoFileName);
-                    Console.WriteLine($"- Creating desktop.ini with icon: \"{icoFileName}\"");
-                    Console.WriteLine($"- Refreshing icon cache");
+                    writer.WriteLine($"- Creating desktop.ini with icon: \"{icoFileName}\"");
+                    writer.WriteLine($"- Refreshing icon cache");
                     RefreshIconCacheForDirectory(directory);
-                    Console.WriteLine();
+                    writer.WriteLine();
                 }
                 else
                 {
-                    // No color ico found, proceed with jpg files
-                    string[] jpgFiles = Directory.GetFiles(directory, FileName_FolderJpg, SearchOption.TopDirectoryOnly)
-                        .Concat(Directory.GetFiles(directory, FileName_CoverJpg, SearchOption.TopDirectoryOnly))
-                        .Concat(Directory.GetFiles(directory, FileName_FrontJpg, SearchOption.TopDirectoryOnly))
-                        .Concat(Directory.GetFiles(directory, FileName_IndexJpg, SearchOption.TopDirectoryOnly))
-                        .Concat(Directory.GetFiles(directory, FileName_IndexPng, SearchOption.TopDirectoryOnly))
-                        .ToArray();
-
-                    foreach (string jpgFile in jpgFiles)
+                    foreach (string jpgFile in GetSourceImages(directory))
                     {
                         string tempDirectoryName = directory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
                         string lastFolderName = Path.GetFileName(tempDirectoryName);
-
                         if (string.IsNullOrEmpty(lastFolderName))
                             lastFolderName = string.IsNullOrEmpty(tempDirectoryName) ? "root_placeholder" : tempDirectoryName;
 
                         string deterministicString = GenerateDeterministicString(lastFolderName, 6);
                         string icoFileName = Path.Combine(directory, $"folderjpg-{deterministicString}.ico");
 
-                        Console.WriteLine();
-                        Console.WriteLine($"### folderjpg \"{directory}\\\"");
-                        Console.WriteLine();
-                        Console.WriteLine($"- Found jpg: \"{jpgFile}\"");
-                        ConvertToIcon(jpgFile, icoFileName);
-                        Console.WriteLine($"- Creating icon: \"{directory}\\folderjpg-{deterministicString}.ico\"");
+                        writer.WriteLine();
+                        writer.WriteLine($"### folderjpg \"{directory}\\\"");
+                        writer.WriteLine();
+                        writer.WriteLine($"- Found jpg: \"{jpgFile}\"");
+                        ConvertToIcon(jpgFile, icoFileName, writer);
+                        writer.WriteLine($"- Creating icon: \"{directory}\\folderjpg-{deterministicString}.ico\"");
                         CreateDesktopIniFile(directory, $"folderjpg-{deterministicString}.ico");
-
-                        Console.WriteLine($"- Refreshing icon cache");
+                        writer.WriteLine($"- Refreshing icon cache");
                         RefreshIconCacheForDirectory(directory);
-                        Console.WriteLine();
+                        writer.WriteLine();
                     }
                 }
             }
 
-            string[] subdirectories = Directory.GetDirectories(directory);
-            foreach (string subdirectory in subdirectories)
+            // Process subdirectories in parallel; buffer each subtree's output and flush atomically
+            Parallel.ForEach(Directory.GetDirectories(directory), subdirectory =>
             {
-                ProcessDirectory(subdirectory);
-            }
+                var sw = new StringWriter();
+                ProcessDirectory(subdirectory, sw);
+                lock (_consoleLock)
+                {
+                    writer.Write(sw.ToString());
+                }
+            });
         }
         catch (UnauthorizedAccessException)
         {
-            Console.WriteLine($"Error: Access denied to directory: {directory}");
+            writer.WriteLine($"Error: Access denied to directory: {directory}");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error processing directory {directory}: {ex.Message}");
+            writer.WriteLine($"Error processing directory {directory}: {ex.Message}");
         }
     }
 
+    // Returns all candidate source image files in a directory, in priority order
+    private static string[] GetSourceImages(string directory) =>
+        Directory.GetFiles(directory, FileName_FolderJpg, SearchOption.TopDirectoryOnly)
+            .Concat(Directory.GetFiles(directory, FileName_CoverJpg, SearchOption.TopDirectoryOnly))
+            .Concat(Directory.GetFiles(directory, FileName_FrontJpg, SearchOption.TopDirectoryOnly))
+            .Concat(Directory.GetFiles(directory, FileName_IndexJpg, SearchOption.TopDirectoryOnly))
+            .Concat(Directory.GetFiles(directory, FileName_IndexPng, SearchOption.TopDirectoryOnly))
+            .ToArray();
+
     // Convert the image to a multi-resolution .ico file (16, 32, 48, 64, 128, 256 px)
-    public static void ConvertToIcon(string inputPath, string outputPath)
+    public static void ConvertToIcon(string inputPath, string outputPath, TextWriter? writer = null)
     {
-        // Convert the jpg file to an icon file with multiple sizes from 16 to 256 pixels
+        writer ??= Console.Out;
+
+        long fileSize = new FileInfo(inputPath).Length;
+        if (fileSize > MaxImageFileBytes)
+        {
+            writer.WriteLine($"- WARNING: Skipping large image ({fileSize / (1024 * 1024)} MB > 100 MB limit): \"{inputPath}\"");
+            return;
+        }
+
         try
         {
             using (var collection = new MagickImageCollection())
             {
-                // Load the original image
                 using (var originalImage = new MagickImage(inputPath))
                 {
-                    // Define standard ICO sizes
                     uint[] sizes = { 16, 32, 48, 64, 128, 256 };
-
                     foreach (uint size in sizes)
                     {
                         using (var image = originalImage.Clone())
                         {
-                            // Resize the image while maintaining aspect ratio
                             image.Resize(size, size);
-
-                            // Create a new image with the correct size and transparent background
                             using (var resizedImage = new MagickImage(MagickColors.Transparent, size, size))
                             {
-                                // Composite the resized image onto the transparent background
                                 resizedImage.Composite(image, Gravity.Center, CompositeOperator.Over);
-
-                                // Add the image to the collection
                                 collection.Add(resizedImage.Clone());
                             }
                         }
                     }
                 }
-
-                // Save as ICO
                 collection.Write(outputPath, MagickFormat.Ico);
             }
         }
         catch (MagickException ex)
         {
-            Console.WriteLine($"- ERROR: {ex.Message}");
+            writer.WriteLine($"- ERROR: {ex.Message}");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"- ERROR: {ex.Message}");
+            writer.WriteLine($"- ERROR: {ex.Message}");
         }
     }
 

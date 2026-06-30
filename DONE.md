@@ -189,3 +189,15 @@
 *Fixed: same as 2005 — MagickException now caught specifically before the general catch.*
 
 --------------------------------------------------------------------------------
+### - [x] 2004. Magic file size threshold: The conversion code doesn't check the file size before attempting to convert very large images, which could cause memory issues.
+*Fixed: ConvertToIcon now checks file size before loading; files over 100 MB print a warning and are skipped.*
+
+--------------------------------------------------------------------------------
+### - [x] 2007. No parallel processing: For large directories with many images, processing is done sequentially which could be slow.
+*Fixed: ProcessDirectory now uses Parallel.ForEach for subdirectories. Each subtree buffers output in a StringWriter and flushes atomically under a lock so console output stays readable.*
+
+--------------------------------------------------------------------------------
+### - [x] 3007.  **`desktop.ini` Logic:** The code checks if `desktop.ini` exists and skips processing if it does. This prevents overwriting existing customizations but also means if the source `folder.jpg` (or cover/front) is *updated*, the icon won't be regenerated.
+*Fixed: if desktop.ini references a folderjpg-*.ico, the source image timestamp is compared to the .ico timestamp; if source is newer the old files are deleted and the icon is regenerated. Custom desktop.ini files are always skipped.*
+
+--------------------------------------------------------------------------------
