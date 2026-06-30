@@ -83,7 +83,7 @@ Here are some potential bugs and incoherences in the provided source code:
    - Fix: make it `private const bool DEBUG = false;` to avoid string comparisons everywhere.
 
 --------------------------------------------------------------------------------
-### - [_] 1002. Random seeding  
+### - [x] 1002. Random seeding  
 
    - Every call to GenerateRandomString does  
      `var random = new Random();`  
@@ -195,7 +195,7 @@ Would you like me to propose fixes for any of these issues or continue with fixi
 
 
 --------------------------------------------------------------------------------
-### - [_] 3002.  **`Random` Instance Creation:** In `GenerateRandomString`, `new Random()` is created on each call. If called rapidly, this can lead to non-random sequences (often duplicate values) due to being seeded with similar system clock times. It's better practice to use a single, static `Random` instance shared across calls.
+### - [x] 3002.  **`Random` Instance Creation:** In `GenerateRandomString`, `new Random()` is created on each call. If called rapidly, this can lead to non-random sequences (often duplicate values) due to being seeded with similar system clock times. It's better practice to use a single, static `Random` instance shared across calls.
 
 
 --------------------------------------------------------------------------------

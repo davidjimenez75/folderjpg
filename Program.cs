@@ -373,11 +373,9 @@ public class Program
     {
         if (string.IsNullOrEmpty(nameInput))
         {
-            // Fallback for empty input
             const string fallbackChars = "abcdefghijklmnopqrstuvwxyz0123456789";
-            Random localRandom = new Random();
             return new string(Enumerable.Repeat(fallbackChars, length)
-                .Select(s => localRandom.Next(s.Length)).Select(i => fallbackChars[i]).ToArray());
+                .Select(s => Random.Shared.Next(s.Length)).Select(i => fallbackChars[i]).ToArray());
         }
 
         const string chars = "abcdefghijklmnopqrstuvwxyz0123456789";
