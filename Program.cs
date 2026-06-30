@@ -38,38 +38,7 @@ public class Program
 
                 // Language options
                 case "--lang":
-                    if (args.Length > 1)
-                    {
-                        string lang = args[1];
-                        switch (lang)
-                        {
-                            case "es":
-                                DisplayHelpSpanish();
-                                break;
-                            case "de":
-                                DisplayHelpGerman();
-                                break;
-                            case "fr":
-                                DisplayHelpFrench();
-                                break;
-                            case "it":
-                                DisplayHelpItalian();
-                                break;
-                            case "pt":
-                                DisplayHelpPortuguese();
-                                break;
-                            case "zh":
-                                DisplayHelpChinese();
-                                break;
-                            default:
-                                DisplayHelpEnglish();
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        DisplayHelp();
-                    }
+                    DisplayHelpForLanguage(args.Length > 1 ? args[1] : GetSystemLanguage());
                     return;
 
                 // Version options
@@ -351,6 +320,10 @@ public class Program
                 collection.Write(outputPath, MagickFormat.Ico);
             }
         }
+        catch (MagickException ex)
+        {
+            Console.WriteLine($"- ERROR: {ex.Message}");
+        }
         catch (Exception ex)
         {
             Console.WriteLine($"- ERROR: {ex.Message}");
@@ -405,32 +378,19 @@ public class Program
     }
 
     // Show the help information on console
-    static void DisplayHelp()
+    static void DisplayHelp() => DisplayHelpForLanguage(GetSystemLanguage());
+
+    static void DisplayHelpForLanguage(string lang)
     {
-        string language = GetSystemLanguage();
-        switch (language)
+        switch (lang)
         {
-            case "es":
-                DisplayHelpSpanish();
-                break;
-            case "de":
-                DisplayHelpGerman();
-                break;
-            case "fr":
-                DisplayHelpFrench();
-                break;
-            case "it":
-                DisplayHelpItalian();
-                break;
-            case "pt":
-                DisplayHelpPortuguese();
-                break;
-            case "zh":
-                DisplayHelpChinese();
-                break;
-            default:
-                DisplayHelpEnglish(); // Default to English if language not supported or detected
-                break;
+            case "es": DisplayHelpSpanish();    break;
+            case "de": DisplayHelpGerman();     break;
+            case "fr": DisplayHelpFrench();     break;
+            case "it": DisplayHelpItalian();    break;
+            case "pt": DisplayHelpPortuguese(); break;
+            case "zh": DisplayHelpChinese();    break;
+            default:   DisplayHelpEnglish();    break;
         }
     }
 

@@ -173,3 +173,19 @@
 ### - [x] 3008.  **Platform Check:** `Environment.OSVersion.Platform != PlatformID.Unix` is used to gate the `ie4uinit.exe` call. A more robust check for Windows is `System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows)`.
 
 --------------------------------------------------------------------------------
+### - [x] 2005. Inappropriate exception handling: The ConvertToIcon method catches all exceptions and just prints the message, potentially hiding serious errors.
+*Fixed: added MagickException catch before the general catch to surface ImageMagick-specific errors with a distinct message.*
+
+--------------------------------------------------------------------------------
+### - [x] 2008. Missing resource cleanup: The MagickImage resources aren't always being properly disposed of in all code paths.
+*Resolved: all MagickImage objects are already wrapped in using blocks; disposal is guaranteed in all paths including exceptions.*
+
+--------------------------------------------------------------------------------
+### - [x] 2009. Duplicate GetSystemLanguage logic: The language detection is done inline rather than using the GetSystemLanguage method consistently.
+*Fixed: extracted DisplayHelpForLanguage(string) helper; both DisplayHelp() and the --lang switch now call it, eliminating the duplicated switch.*
+
+--------------------------------------------------------------------------------
+### - [x] 3004.  **Broad Exception Handling:** The `catch (Exception ex)` block in `ConvertToIcon` catches *all* possible exceptions. While this prevents crashes, it might hide specific, recoverable errors (e.g., file-not-found vs. image format errors from ImageMagick). It simply prints the message to the console, which might not be sufficient for diagnosing issues. Consider catching more specific exceptions (like `MagickException`) if appropriate, or logging errors more robustly.
+*Fixed: same as 2005 — MagickException now caught specifically before the general catch.*
+
+--------------------------------------------------------------------------------

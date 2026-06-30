@@ -21,25 +21,13 @@
 ### - [_] 2004. Magic file size threshold: The conversion code doesn't check the file size before attempting to convert very large images, which could cause memory issues.
 
 --------------------------------------------------------------------------------
-### - [_] 2005. Inappropriate exception handling: The ConvertToIcon method catches all exceptions and just prints the message, potentially hiding serious errors.
-
---------------------------------------------------------------------------------
 ### - [_] 2007. No parallel processing: For large directories with many images, processing is done sequentially which could be slow.
-
---------------------------------------------------------------------------------
-### - [_] 2008. Missing resource cleanup: The MagickImage resources aren't always being properly disposed of in all code paths.
-
---------------------------------------------------------------------------------
-### - [_] 2009. Duplicate GetSystemLanguage logic: The language detection is done inline rather than using the GetSystemLanguage method consistently.
 
 --------------------------------------------------------------------------------
 ### - [_] 2010. Incomplete test coverage: There are no tests for the main functionality of the program (e.g., ProcessDirectory, IconConversion).
 
 --------------------------------------------------------------------------------
 ## 3. GitHub Copilot: Here are the main bugs, inconsistencies, and areas for improvement I found in your code by Gemini 2.5 Pro (Preview)
-
---------------------------------------------------------------------------------
-### - [_] 3004.  **Broad Exception Handling:** The `catch (Exception ex)` block in `ConvertToIcon` catches *all* possible exceptions. While this prevents crashes, it might hide specific, recoverable errors (e.g., file-not-found vs. image format errors from ImageMagick). It simply prints the message to the console, which might not be sufficient for diagnosing issues. Consider catching more specific exceptions (like `MagickException`) if appropriate, or logging errors more robustly.
 
 --------------------------------------------------------------------------------
 ### - [_] 3007.  **`desktop.ini` Logic:** The code checks if `desktop.ini` exists and skips processing if it does. This prevents overwriting existing customizations but also means if the source `folder.jpg` (or cover/front) is *updated*, the icon won't be regenerated. The logic might need refinement, perhaps checking if the existing `desktop.ini` points to a `folderjpg-*.ico` file and regenerating if the source image is newer.
