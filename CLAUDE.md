@@ -1,5 +1,9 @@
 # Working with the folderjpg Project
 
+> **IMPORTANT:** Always start every response to the user with the prefix `🤖 FOLDERJPG:` in monospace (backticks).
+>
+> **IMPORTANT:** All technical content must be in English regardless of the language the user writes in: function names, variable names, class names, comments, documentation, commit messages, file names, and any code or technical output. Conversational replies may match the user's language, but all technical artifacts are always English.
+
 ## Project Overview
 
 folderjpg is a command-line utility that creates custom folder icons in Windows by:
