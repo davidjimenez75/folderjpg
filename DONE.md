@@ -253,3 +253,14 @@
 *Fixed: see 012 and 1010.*
 
 --------------------------------------------------------------------------------
+## NEW FEATURES
+
+--------------------------------------------------------------------------------
+### - [x] 6001. Fallback ico files when no image exists: if a folder has no jpg/png source image (folder.jpg, cover.jpg, front.jpg, index.jpg, index.png) and no folder.ico or color ico, check for index.ico and favicon.ico and use them as the folder icon. Priority order within this fallback: index.ico → favicon.ico.
+*Fixed: ProcessDirectory now tries index.ico then favicon.ico as the lowest-priority fallback when no other source is found. Three tests added (FallbackIndexIco, FallbackFaviconIco, priority order).*
+
+--------------------------------------------------------------------------------
+### - [x] 6002. Extend the color ico list dynamically from C:\icons\ folder: if C:\icons\ exists, add all *.ico filenames found there to the color ico search list (priority #2), merged with the hardcoded list.
+*Fixed: ColorIcoNames is now built at startup by BuildColorIcoNames(), which merges the hardcoded list with filenames from C:\icons\ (if that folder exists) using a case-insensitive union.*
+
+--------------------------------------------------------------------------------

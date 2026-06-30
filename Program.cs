@@ -25,6 +25,8 @@ public class Program
     private const string FileName_IndexJpg   = "index.jpg";
     private const string FileName_IndexPng   = "index.png";
     private const string FileName_FolderIco  = "folder.ico";
+    private const string FileName_IndexIco   = "index.ico";
+    private const string FileName_FaviconIco = "favicon.ico";
     private const string FileName_DesktopIni = "desktop.ini";
 
     // Entry point of the application
@@ -189,12 +191,24 @@ public class Program
         Console.WriteLine("Done.");
     }
 
-    // Color ico filenames that take priority over jpg files
-    private static readonly string[] ColorIcoNames = {
-        "azure.ico", "black.ico", "blue.ico", "brown.ico", "gray.ico", "green.ico",
-        "lemon.ico", "orange.ico", "pink.ico", "red.ico", "violet.ico",
-        "white.ico", "yellow.ico"
-    };
+    // Color ico filenames that take priority over jpg files (merged with C:\icons\ at startup)
+    private static readonly string[] ColorIcoNames = BuildColorIcoNames();
+
+    private static string[] BuildColorIcoNames()
+    {
+        string[] hardcoded = {
+            "azure.ico", "black.ico", "blue.ico", "brown.ico", "gray.ico", "green.ico",
+            "lemon.ico", "orange.ico", "pink.ico", "red.ico", "violet.ico",
+            "white.ico", "yellow.ico"
+        };
+        const string iconsDir = @"C:\icons";
+        if (!Directory.Exists(iconsDir))
+            return hardcoded;
+        var extra = Directory.GetFiles(iconsDir, "*.ico")
+            .Select(Path.GetFileName)
+            .OfType<string>();
+        return hardcoded.Union(extra, StringComparer.OrdinalIgnoreCase).ToArray();
+    }
 
     // Process the directory and its subdirectories
     public static void ProcessDirectory(string directory, TextWriter? writer = null)
@@ -272,7 +286,8 @@ public class Program
                 }
                 else
                 {
-                    foreach (string jpgFile in GetSourceImages(directory))
+                    string[] sourceImages = GetSourceImages(directory);
+                    foreach (string jpgFile in sourceImages)
                     {
                         string tempDirectoryName = directory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
                         string lastFolderName = Path.GetFileName(tempDirectoryName);
@@ -292,6 +307,29 @@ public class Program
                         writer.WriteLine($"- Refreshing icon cache");
                         RefreshIconCacheForDirectory(directory);
                         writer.WriteLine();
+                    }
+
+                    // Fallback: no jpg/png found — try index.ico then favicon.ico
+                    if (sourceImages.Length == 0)
+                    {
+                        string? fallbackIco = new[] { FileName_IndexIco, FileName_FaviconIco }
+                            .Select(name => Path.Combine(directory, name))
+                            .Where(File.Exists)
+                            .Select(Path.GetFileName)
+                            .FirstOrDefault();
+
+                        if (fallbackIco != null)
+                        {
+                            writer.WriteLine();
+                            writer.WriteLine($"### folderjpg \"{directory}\\\"");
+                            writer.WriteLine();
+                            writer.WriteLine($"- Found {fallbackIco}: \"{Path.Combine(directory, fallbackIco)}\"");
+                            CreateDesktopIniFile(directory, fallbackIco);
+                            writer.WriteLine($"- Creating desktop.ini with icon: \"{fallbackIco}\"");
+                            writer.WriteLine($"- Refreshing icon cache");
+                            RefreshIconCacheForDirectory(directory);
+                            writer.WriteLine();
+                        }
                     }
                 }
             }

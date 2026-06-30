@@ -323,6 +323,87 @@ public class DirectoryProcessingTests
     }
 
     [Fact]
+    public void ProcessDirectory_FallbackIndexIco_UsedWhenNoImageExists()
+    {
+        string testDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        Directory.CreateDirectory(testDirectory);
+        File.WriteAllBytes(Path.Combine(testDirectory, "index.ico"), new byte[] { 0 });
+
+        try
+        {
+            Program.ProcessDirectory(testDirectory);
+
+            string desktopIniPath = Path.Combine(testDirectory, "desktop.ini");
+            Assert.True(File.Exists(desktopIniPath));
+            string content = File.ReadAllText(desktopIniPath);
+            Assert.Contains("IconResource=index.ico,0", content, StringComparison.OrdinalIgnoreCase);
+            Assert.Empty(Directory.GetFiles(testDirectory, "folderjpg-*.ico"));
+        }
+        finally
+        {
+            if (Directory.Exists(testDirectory))
+            {
+                RemoveReadOnlyRecursive(testDirectory);
+                Directory.Delete(testDirectory, true);
+            }
+        }
+    }
+
+    [Fact]
+    public void ProcessDirectory_FallbackFaviconIco_UsedWhenNoImageAndNoIndexIco()
+    {
+        string testDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        Directory.CreateDirectory(testDirectory);
+        File.WriteAllBytes(Path.Combine(testDirectory, "favicon.ico"), new byte[] { 0 });
+
+        try
+        {
+            Program.ProcessDirectory(testDirectory);
+
+            string desktopIniPath = Path.Combine(testDirectory, "desktop.ini");
+            Assert.True(File.Exists(desktopIniPath));
+            string content = File.ReadAllText(desktopIniPath);
+            Assert.Contains("IconResource=favicon.ico,0", content, StringComparison.OrdinalIgnoreCase);
+            Assert.Empty(Directory.GetFiles(testDirectory, "folderjpg-*.ico"));
+        }
+        finally
+        {
+            if (Directory.Exists(testDirectory))
+            {
+                RemoveReadOnlyRecursive(testDirectory);
+                Directory.Delete(testDirectory, true);
+            }
+        }
+    }
+
+    [Fact]
+    public void ProcessDirectory_FallbackIndexIco_TakesPriorityOverFaviconIco()
+    {
+        string testDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        Directory.CreateDirectory(testDirectory);
+        File.WriteAllBytes(Path.Combine(testDirectory, "index.ico"),   new byte[] { 0 });
+        File.WriteAllBytes(Path.Combine(testDirectory, "favicon.ico"), new byte[] { 0 });
+
+        try
+        {
+            Program.ProcessDirectory(testDirectory);
+
+            string desktopIniPath = Path.Combine(testDirectory, "desktop.ini");
+            Assert.True(File.Exists(desktopIniPath));
+            string content = File.ReadAllText(desktopIniPath);
+            Assert.Contains("IconResource=index.ico,0", content, StringComparison.OrdinalIgnoreCase);
+        }
+        finally
+        {
+            if (Directory.Exists(testDirectory))
+            {
+                RemoveReadOnlyRecursive(testDirectory);
+                Directory.Delete(testDirectory, true);
+            }
+        }
+    }
+
+    [Fact]
     public void ProcessDirectory_ProcessesSubdirectoriesRecursively()
     {
         // Arrange
