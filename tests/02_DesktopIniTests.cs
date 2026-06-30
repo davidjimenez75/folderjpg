@@ -38,13 +38,6 @@ public class DesktopIniTests
             {
                 if (Directory.Exists(testDirectory))
                 {
-                    // Remove read-only attribute from the directory if it exists before deleting
-                    DirectoryInfo di = new DirectoryInfo(testDirectory);
-                    if (di.Exists && di.Attributes.HasFlag(FileAttributes.ReadOnly)) // Check if exists and has flag
-                    {
-                         di.Attributes &= ~FileAttributes.ReadOnly;
-                    }
-
                     Directory.Delete(testDirectory, true);
                 }
             }

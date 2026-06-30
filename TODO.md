@@ -47,16 +47,16 @@ Here are some potential bugs and incoherences in the provided source code:
 ### - [x] 005 -- Hardcoded language check: The language check in DisplayHelp only supports "es" for Spanish and defaults to English for anything else. This is fine, but it could be more extensible. (Added: fr, de, pt, it and zh)
 
 --------------------------------------------------------------------------------
-### - [_] 006 -- File attribute handling: In CreateDesktopIniFile, the directory is set to ReadOnly after creating desktop.ini. This may cause issues if the user wants to modify the directory later.
+### - [x] 006 -- File attribute handling: In CreateDesktopIniFile, the directory is set to ReadOnly after creating desktop.ini. This may cause issues if the user wants to modify the directory later.
 
 --------------------------------------------------------------------------------
 ### - [x] 007 -- Unused SkiaSharp reference: The project references SkiaSharp, but the code does not use it.
 
 --------------------------------------------------------------------------------
-### - [_] 008 -- Error handling: In ProcessDirectory, if an exception occurs, it prints the error but continues execution. This is generally fine for a CLI tool, but it could be improved by providing more context or options for the user.
+### - [x] 008 -- Error handling: In ProcessDirectory, if an exception occurs, it prints the error but continues execution. This is generally fine for a CLI tool, but it could be improved by providing more context or options for the user.
 
 --------------------------------------------------------------------------------
-### - [_] 009 -- Redundant file existence check: In the DEBUG block, the code checks for the existence of desktop.ini, folder.jpg, and cover.jpg, but this is already checked earlier.
+### - [x] 009 -- Redundant file existence check: In the DEBUG block, the code checks for the existence of desktop.ini, folder.jpg, and cover.jpg, but this is already checked earlier.
 
 --------------------------------------------------------------------------------
 ### - [x] 010 -- Platform check: The code checks for PlatformID.Unix to decide whether to refresh the icon cache. This is correct, but it may not cover all non-Windows platforms (e.g., PlatformID.MacOSX).
@@ -121,7 +121,7 @@ Here are some potential bugs and incoherences in the provided source code:
    - Fix: use `RuntimeInformation.IsOSPlatform(OSPlatform.Windows)` to be explicit.
 
 --------------------------------------------------------------------------------
-### - [_] 1009. Redundant checks in DEBUG block  
+### - [x] 1009. Redundant checks in DEBUG block  
    - Inside DEBUG you re‑check for files you just enumerated.  
    - Fix: simplify the DEBUG branch to dump the list you already built.
 
@@ -131,13 +131,13 @@ Here are some potential bugs and incoherences in the provided source code:
     - Suggestion: add unit/integration tests for image conversion and CLI argument parsing.
 
 --------------------------------------------------------------------------------
-### - [_] 1011. `CreateDesktopIniFile` side‑effects  
+### - [x] 1011. `CreateDesktopIniFile` side‑effects  
     - It sets both Hidden+System on the ini file and ReadOnly on the directory.  
     - Tests no longer assert the directory ReadOnly bit, but the side‑effect remains.  
     - Fix: either remove the directory‐readonly logic or add test coverage back.
 
 --------------------------------------------------------------------------------
-### - [_] 1012. Comment inaccuracies  
+### - [x] 1012. Comment inaccuracies  
     - e.g. “If no arguments are passed, we dont to nothing” (typo + doesn’t match behavior).  
     - Fix: update comments to reflect actual behavior or remove stale ones.
 
@@ -199,7 +199,7 @@ Would you like me to propose fixes for any of these issues or continue with fixi
 
 
 --------------------------------------------------------------------------------
-### - [_] 3003.  **Directory `ReadOnly` Attribute:** In `CreateDesktopIniFile`, after writing `desktop.ini`, the code sets the *entire directory* to `ReadOnly` (`di.Attributes |= FileAttributes.ReadOnly;`). This is a significant side effect and likely unintended or problematic, as it prevents easy modification of the directory's contents afterward. The corresponding test in ProgramTests.cs even stopped asserting this behavior, suggesting it might be undesirable.
+### - [x] 3003.  **Directory `ReadOnly` Attribute:** In `CreateDesktopIniFile`, after writing `desktop.ini`, the code sets the *entire directory* to `ReadOnly` (`di.Attributes |= FileAttributes.ReadOnly;`). This is a significant side effect and likely unintended or problematic, as it prevents easy modification of the directory's contents afterward. The corresponding test in ProgramTests.cs even stopped asserting this behavior, suggesting it might be undesirable.
 
 
 --------------------------------------------------------------------------------

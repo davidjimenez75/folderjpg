@@ -14,8 +14,6 @@ public class Program
         typeof(Program).Assembly
             .GetCustomAttribute<System.Reflection.AssemblyInformationalVersionAttribute>()
             ?.InformationalVersion ?? "unknown";
-    private const bool DEBUG = false;
-
     private const string FileName_FolderJpg  = "folder.jpg";
     private const string FileName_CoverJpg   = "cover.jpg";
     private const string FileName_FrontJpg   = "front.jpg";
@@ -305,13 +303,17 @@ public class Program
                 ProcessDirectory(subdirectory);
             }
         }
+        catch (UnauthorizedAccessException)
+        {
+            Console.WriteLine($"Error: Access denied to directory: {directory}");
+        }
         catch (Exception ex)
         {
             Console.WriteLine($"Error processing directory {directory}: {ex.Message}");
         }
     }
 
-    // Convert and resize the image to an icon of 256x256
+    // Convert the image to a multi-resolution .ico file (16, 32, 48, 64, 128, 256 px)
     public static void ConvertToIcon(string inputPath, string outputPath)
     {
         // Convert the jpg file to an icon file with multiple sizes from 16 to 256 pixels
@@ -364,9 +366,6 @@ public class Program
         File.WriteAllText(desktopIniPath, content);
 
         File.SetAttributes(desktopIniPath, File.GetAttributes(desktopIniPath) | FileAttributes.Hidden | FileAttributes.System);
-
-        DirectoryInfo di = new DirectoryInfo(directory);
-        di.Attributes |= FileAttributes.ReadOnly;
     }
 
     // Generate a deterministic string of a given length based on an input string (e.g., folder name)
@@ -376,8 +375,7 @@ public class Program
         {
             // Fallback for empty input
             const string fallbackChars = "abcdefghijklmnopqrstuvwxyz0123456789";
-            Random localRandom = new Random(); 
-            // Console.WriteLine($"[DEBUG] GenerateDeterministicString - Input: EMPTY, using fallback random."); // Optional: Keep if needed
+            Random localRandom = new Random();
             return new string(Enumerable.Repeat(fallbackChars, length)
                 .Select(s => localRandom.Next(s.Length)).Select(i => fallbackChars[i]).ToArray());
         }
@@ -396,8 +394,6 @@ public class Program
             seed = BitConverter.ToInt32(hashBytes, 0);
         }
         
-        // Console.WriteLine($"[DEBUG] GenerateDeterministicString - Input: '{nameInput}', Normalized: '{normalizedName}', SHA256-based Seed: {seed}"); // Optional: Keep if needed
-
         Random random = new Random(seed);
         return new string(Enumerable.Repeat(chars, length)
             .Select(s => random.Next(s.Length)).Select(i => chars[i]).ToArray());
