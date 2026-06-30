@@ -30,6 +30,7 @@ public class Program
     // Entry point of the application
     public static void Main(string[] args)
     {
+        Console.OutputEncoding = Encoding.UTF8;
         if (args.Length > 0)
         {
             switch (args[0])

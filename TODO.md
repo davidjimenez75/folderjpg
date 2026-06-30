@@ -43,7 +43,7 @@ The following test cases should be implemented:
 Prioritize tests that verify the main application workflow and critical error paths.
 
 --------------------------------------------------------------------------------
-### - [_] 9000. Change terminal to be able to see Chinese characters. (e.g., chcp 65001)
+### - [x] 9000. Change terminal to be able to see Chinese characters. (e.g., chcp 65001)
 
 --------------------------------------------------------------------------------
 ### - [_] 9001. Add tests for the main functionality of the program (e.g., ProcessDirectory, IconConversion).
