@@ -327,14 +327,16 @@ public class Program
             .ToArray();
 
     // Convert the image to a multi-resolution .ico file (16, 32, 48, 64, 128, 256 px)
-    public static void ConvertToIcon(string inputPath, string outputPath, TextWriter? writer = null)
+    public static void ConvertToIcon(string inputPath, string outputPath, TextWriter? writer = null, long maxFileSizeBytes = MaxImageFileBytes)
     {
         writer ??= Console.Out;
 
         long fileSize = new FileInfo(inputPath).Length;
-        if (fileSize > MaxImageFileBytes)
+        if (fileSize > maxFileSizeBytes)
         {
-            writer.WriteLine($"- WARNING: Skipping large image ({fileSize / (1024 * 1024)} MB > 100 MB limit): \"{inputPath}\"");
+            string fileSizeStr = fileSize >= 1024 * 1024 ? $"{fileSize / (1024 * 1024)} MB" : $"{fileSize} bytes";
+            string limitStr   = maxFileSizeBytes >= 1024 * 1024 ? $"{maxFileSizeBytes / (1024 * 1024)} MB" : $"{maxFileSizeBytes} bytes";
+            writer.WriteLine($"- WARNING: Skipping large image ({fileSizeStr} > {limitStr} limit): \"{inputPath}\"");
             return;
         }
 

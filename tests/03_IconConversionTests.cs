@@ -48,6 +48,61 @@ public class IconConversionTests
     }
 
     [Fact]
+    public void ConvertToIcon_CreatesExpectedNumberOfSizes()
+    {
+        string testDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        Directory.CreateDirectory(testDirectory);
+        string inputJpgPath = Path.Combine(testDirectory, "test.jpg");
+        string outputIcoPath = Path.Combine(testDirectory, "output.ico");
+
+        using (var image = new MagickImage(MagickColors.Green, 256, 256))
+        {
+            image.Format = MagickFormat.Jpg;
+            image.Write(inputJpgPath);
+        }
+
+        try
+        {
+            Program.ConvertToIcon(inputJpgPath, outputIcoPath);
+
+            using (var collection = new MagickImageCollection(outputIcoPath))
+            {
+                Assert.Equal(6, collection.Count); // 16, 32, 48, 64, 128, 256
+            }
+        }
+        finally
+        {
+            if (Directory.Exists(testDirectory))
+                Directory.Delete(testDirectory, true);
+        }
+    }
+
+    [Fact]
+    public void ConvertToIcon_FileExceedsSizeLimit_PrintsWarningAndSkips()
+    {
+        string testDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        Directory.CreateDirectory(testDirectory);
+        string inputPath    = Path.Combine(testDirectory, "large.jpg");
+        string outputIcoPath = Path.Combine(testDirectory, "output.ico");
+        File.WriteAllText(inputPath, "some content"); // non-empty file
+
+        var sw = new StringWriter();
+        try
+        {
+            Program.ConvertToIcon(inputPath, outputIcoPath, sw, maxFileSizeBytes: 1);
+
+            string output = sw.ToString();
+            Assert.Contains("WARNING", output, StringComparison.OrdinalIgnoreCase);
+            Assert.False(File.Exists(outputIcoPath), "No ico should be created for oversized file.");
+        }
+        finally
+        {
+            if (Directory.Exists(testDirectory))
+                Directory.Delete(testDirectory, true);
+        }
+    }
+
+    [Fact]
     public void ConvertToIcon_HandlesInvalidInputFileGracefully() // Renamed for clarity
     {
         // Arrange

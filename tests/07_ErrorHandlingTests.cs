@@ -9,6 +9,38 @@ using System.Threading;
 public class ErrorHandlingTests
 {
     [Fact]
+    public void ProcessDirectory_WriterParameter_CapturesOutput()
+    {
+        string testDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        Directory.CreateDirectory(testDirectory);
+        // Custom desktop.ini (not folderjpg) → triggers "already exists" message
+        File.WriteAllText(Path.Combine(testDirectory, "desktop.ini"), "[.ShellClassInfo]\r\nIconResource=custom.ico,0");
+
+        var sw = new StringWriter();
+        try
+        {
+            Program.ProcessDirectory(testDirectory, sw);
+            Assert.Contains("desktop.ini already exists", sw.ToString(), StringComparison.OrdinalIgnoreCase);
+        }
+        finally
+        {
+            if (Directory.Exists(testDirectory))
+                Directory.Delete(testDirectory, true);
+        }
+    }
+
+    [Fact]
+    public void ProcessDirectory_NonExistentPath_WriterCapturesError()
+    {
+        string nonExistentDir = Path.Combine(Path.GetTempPath(), "folderjpg_nonexistent_" + Path.GetRandomFileName());
+        var sw = new StringWriter();
+
+        Program.ProcessDirectory(nonExistentDir, sw);
+
+        Assert.Contains($"Error processing directory {nonExistentDir}", sw.ToString(), StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public void ProcessDirectory_HandlesDirectoryNotFoundExceptionDuringProcessing()
     {
         // Arrange: Test the general exception handling in ProcessDirectory.

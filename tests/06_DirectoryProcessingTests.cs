@@ -194,6 +194,135 @@ public class DirectoryProcessingTests
     }
 
     [Fact]
+    public void ProcessDirectory_FolderIco_TakesPriorityOverJpg()
+    {
+        string testDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        Directory.CreateDirectory(testDirectory);
+        CreateDummyJpg(Path.Combine(testDirectory, "folder.jpg"));
+        File.WriteAllBytes(Path.Combine(testDirectory, "folder.ico"), new byte[] { 0 });
+
+        try
+        {
+            Program.ProcessDirectory(testDirectory);
+
+            string desktopIniPath = Path.Combine(testDirectory, "desktop.ini");
+            Assert.True(File.Exists(desktopIniPath));
+            string content = File.ReadAllText(desktopIniPath);
+            Assert.Contains("IconResource=folder.ico,0", content, StringComparison.OrdinalIgnoreCase);
+            Assert.Empty(Directory.GetFiles(testDirectory, "folderjpg-*.ico"));
+        }
+        finally
+        {
+            if (Directory.Exists(testDirectory))
+            {
+                RemoveReadOnlyRecursive(testDirectory);
+                Directory.Delete(testDirectory, true);
+            }
+        }
+    }
+
+    [Fact]
+    public void ProcessDirectory_ColorIco_TakesPriorityOverJpg()
+    {
+        string testDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        Directory.CreateDirectory(testDirectory);
+        CreateDummyJpg(Path.Combine(testDirectory, "folder.jpg"));
+        File.WriteAllBytes(Path.Combine(testDirectory, "azure.ico"), new byte[] { 0 });
+
+        try
+        {
+            Program.ProcessDirectory(testDirectory);
+
+            string desktopIniPath = Path.Combine(testDirectory, "desktop.ini");
+            Assert.True(File.Exists(desktopIniPath));
+            string content = File.ReadAllText(desktopIniPath);
+            Assert.Contains("IconResource=azure.ico,0", content, StringComparison.OrdinalIgnoreCase);
+            Assert.Empty(Directory.GetFiles(testDirectory, "folderjpg-*.ico"));
+        }
+        finally
+        {
+            if (Directory.Exists(testDirectory))
+            {
+                RemoveReadOnlyRecursive(testDirectory);
+                Directory.Delete(testDirectory, true);
+            }
+        }
+    }
+
+    [Fact]
+    public void ProcessDirectory_FolderjpgDesktopIni_UpToDate_IsNotRegenerated()
+    {
+        string testDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        Directory.CreateDirectory(testDirectory);
+        string icoName      = "folderjpg-abc123.ico";
+        string icoPath      = Path.Combine(testDirectory, icoName);
+        string desktopIniPath = Path.Combine(testDirectory, "desktop.ini");
+        string jpgPath      = Path.Combine(testDirectory, "folder.jpg");
+
+        CreateDummyJpg(jpgPath);
+        File.WriteAllBytes(icoPath, new byte[] { 0 });
+        File.WriteAllText(desktopIniPath, $"[.ShellClassInfo]\r\nIconResource={icoName},0");
+
+        // ico is newer than source → should NOT regenerate
+        File.SetLastWriteTime(jpgPath,  DateTime.Now.AddHours(-2));
+        File.SetLastWriteTime(icoPath,  DateTime.Now.AddHours(-1));
+
+        try
+        {
+            Program.ProcessDirectory(testDirectory);
+
+            Assert.True(File.Exists(desktopIniPath));
+            Assert.True(File.Exists(icoPath));
+            string content = File.ReadAllText(desktopIniPath);
+            Assert.Contains($"IconResource={icoName},0", content, StringComparison.OrdinalIgnoreCase);
+        }
+        finally
+        {
+            if (Directory.Exists(testDirectory))
+            {
+                RemoveReadOnlyRecursive(testDirectory);
+                Directory.Delete(testDirectory, true);
+            }
+        }
+    }
+
+    [Fact]
+    public void ProcessDirectory_FolderjpgDesktopIni_SourceImageNewer_IsRegenerated()
+    {
+        string testDirectory  = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        Directory.CreateDirectory(testDirectory);
+        string oldIcoName     = "folderjpg-old123.ico";
+        string oldIcoPath     = Path.Combine(testDirectory, oldIcoName);
+        string desktopIniPath = Path.Combine(testDirectory, "desktop.ini");
+        string jpgPath        = Path.Combine(testDirectory, "folder.jpg");
+
+        CreateDummyJpg(jpgPath);
+        File.WriteAllBytes(oldIcoPath, new byte[] { 0 });
+        File.WriteAllText(desktopIniPath, $"[.ShellClassInfo]\r\nIconResource={oldIcoName},0");
+
+        // source is newer than ico → should regenerate
+        File.SetLastWriteTime(oldIcoPath, DateTime.Now.AddHours(-2));
+        File.SetLastWriteTime(jpgPath,    DateTime.Now.AddHours(-1));
+
+        try
+        {
+            Program.ProcessDirectory(testDirectory);
+
+            Assert.False(File.Exists(oldIcoPath), "Old ico should be deleted after regeneration.");
+            Assert.Single(Directory.GetFiles(testDirectory, "folderjpg-*.ico"));
+            Assert.True(File.Exists(desktopIniPath), "desktop.ini should be recreated.");
+        }
+        finally
+        {
+            if (Directory.Exists(testDirectory))
+            {
+                RemoveReadOnlyRecursive(testDirectory);
+                Directory.Delete(testDirectory, true);
+            }
+        }
+    }
+
+    [Fact]
     public void ProcessDirectory_ProcessesSubdirectoriesRecursively()
     {
         // Arrange
