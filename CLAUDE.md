@@ -99,9 +99,9 @@ The application supports several command-line options:
 ## Modifying the Code
 
 ### Version Updates
-`VERSION.md` is the single source of truth for the app version. When asked to do a "bump" or version update, edit `VERSION.md` with the current date in the format `YYYY.MM.DD`:
+`VERSION.md` is the single source of truth for the app version. When asked to do a "bump" or version update, edit `VERSION.md` with the current date and time in the format `YYYY.MM.DD.HHmm`:
 ```
-2026.06.28
+2026.06.30.2050
 ```
 The build system reads `VERSION.md` automatically and embeds it into the assembly. `Program.VERSION` reads from the assembly at runtime — do **not** edit it manually.
 
