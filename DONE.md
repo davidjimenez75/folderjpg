@@ -129,6 +129,25 @@
     - Fix: update comments to reflect actual behavior or remove stale ones.
 
 --------------------------------------------------------------------------------
+## 2. GitHub Copilot: Here are the main bugs, inconsistencies, and areas for improvement I found in your code by Claude 3.7 Sonnet
+
+--------------------------------------------------------------------------------
+### - [x] 2001. Version inconsistency: The VERSION constant in Program.cs is hardcoded as "2025.05.03.1412", but the csproj tries to read this value dynamically during build with a regex. This can lead to version mismatches if the format changes.
+*Resolved: VERSION is now read from the assembly via AssemblyInformationalVersionAttribute — no hardcoded string.*
+
+--------------------------------------------------------------------------------
+### - [x] 2002. Process.Start security: The code uses System.Diagnostics.Process.Start("ie4uinit.exe", "-show") without full path qualification, which could potentially be a security risk.
+*Resolved: ie4uinit.exe is no longer used. Icon cache refresh uses SHChangeNotify (P/Invoke) and taskkill/explorer.exe via ProcessStartInfo.*
+
+--------------------------------------------------------------------------------
+### - [x] 2003. Missing null check: When combining the arrays for jpg files, there's no null check before using Concat.
+*Resolved: Directory.GetFiles() never returns null — it returns an empty array or throws. No null check needed.*
+
+--------------------------------------------------------------------------------
+### - [x] 2006. No timeout for process: When running ie4uinit.exe, there's no timeout set, which could hang the application if the process doesn't respond.
+*Resolved: ie4uinit.exe is no longer used.*
+
+--------------------------------------------------------------------------------
 ## 3. GitHub Copilot: Here are the main bugs, inconsistencies, and areas for improvement I found in your code by Gemini 2.5 Pro (Preview)
 
 --------------------------------------------------------------------------------

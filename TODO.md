@@ -18,22 +18,10 @@
 ## 2. GitHub Copilot: Here are the main bugs, inconsistencies, and areas for improvement I found in your code by Claude 3.7 Sonnet
 
 --------------------------------------------------------------------------------
-### - [_] 2001. Version inconsistency: The VERSION constant in Program.cs is hardcoded as "2025.05.03.1412", but the csproj tries to read this value dynamically during build with a regex. This can lead to version mismatches if the format changes.
-
---------------------------------------------------------------------------------
-### - [_] 2002. Process.Start security: The code uses System.Diagnostics.Process.Start("ie4uinit.exe", "-show") without full path qualification, which could potentially be a security risk.
-
---------------------------------------------------------------------------------
-### - [_] 2003. Missing null check: When combining the arrays for jpg files, there's no null check before using Concat.
-
---------------------------------------------------------------------------------
 ### - [_] 2004. Magic file size threshold: The conversion code doesn't check the file size before attempting to convert very large images, which could cause memory issues.
 
 --------------------------------------------------------------------------------
 ### - [_] 2005. Inappropriate exception handling: The ConvertToIcon method catches all exceptions and just prints the message, potentially hiding serious errors.
-
---------------------------------------------------------------------------------
-### - [_] 2006. No timeout for process: When running ie4uinit.exe, there's no timeout set, which could hang the application if the process doesn't respond.
 
 --------------------------------------------------------------------------------
 ### - [_] 2007. No parallel processing: For large directories with many images, processing is done sequentially which could be slow.
